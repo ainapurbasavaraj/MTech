@@ -1,3 +1,25 @@
+
+3-4-5 rule of cloud computing
+3 - cloud service models or service types
+  - Iaas
+  - Paas
+  - Saas
+
+4 - deployment models
+
+  - public cloud : 
+  - private cloud 
+  - Hypbrid cloud
+  - community cloud
+
+5 - essential characteristics
+  - On demand self service
+  - Broad network access
+  - Resource pooling
+  - Rapid elasticity
+  - Measured service with pay per use
+
+
 namespaces and cgroups:
 https://www.nginx.com/blog/what-are-namespaces-cgroups-how-do-they-work/
 
