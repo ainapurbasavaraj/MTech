@@ -1,0 +1,127 @@
+
+
+
+Data plane - local per router function. Determinse how data arriving on router input port is forwarded to router output port by examining the headers.
+              This has look up table which is populated by control plane. This just looks the look up table to send to the next destination.
+
+              - packet buffering, packet scheduling, Header modification and forwarding.
+              - If packet info not in forwaring table, It communicates vertically to control plane
+
+Control plane - Network wide logic determines how data is routed among routers along end to end path from source to destination.
+                  This has 2 approaches
+                   a. Traditional routing algorithms implemeneted in routers.
+                   b. Software Defined Network (SDN) implemented in remote servers.
+
+Management plane - Network adming configures and monitor switch through this plane.
+
+Traditional routing algorithms.
+
+1. link state algorithm - Djkstra's shorted path algorithm
+    - This alogorithm runs based on the link cost. Each node in the network will advertise its link costs to every other node in the network.
+      So, At the end it will have global link state (or Graph) snapshots which shows the link cost between every node to every other node.
+      Once we have this link state in all the routers, Then Djstra's algorithm will be run to find out shortest path between any 2 nodes.
+      Then this data is feeded to routing look up table in data plane.
+
+2. Distance vector algorithm - Bellman ford's algorithm  - Not so popular and less used.
+    -  In this algo, Every node advertises only to its adjacent node about the best path to reach other nodes from itself.
+        example : A --- B --- C
+                        |     |
+                        D --- E
+          In this example, B advertises to A that best path to reach to E is D if link cost from B-D-E is less compared to cost B-C-E
+        This way it calculates distance and advertise it to other nodes.
+        This algorithm is not widely used not because of some convergence problems.
+
+These traditional algorithms are not suitable for large networks on the internet. These are mostly suitable for LAN or small autonomus networks.
+
+
+**** Routing protocals on the internet *****
+ Autonomous Systems - Small network or domain managed by only 1 admin.
+
+There are 2 ways of communications here
+1. - Intra Autonomous - communication that happens within the AS
+2. - Inter Autonomous or domain - Communicatinon that happens between AS. Example 1 ISP to another ISP. This is how internet is connected with network of networks.
+
+
+In order to have links over larger networks, There are 2 ways how routing tables are populated.
+
+1. Intra domain communcation - This is done via link state algorithm
+2. Inter domain communication - This is done via BGP (Border Gateway Protocol)
+
+Border Gateway protocols are of 2 types.
+1 - iBGP - Intra BGP - Protocal that runs within the autonomus systems to advertise external autonoums system path to every node in the AS.
+2. - eBGP - external BGP - Protocal that runs thru gateway router of one AS to other As to advertise its path to gateway router in other AS.
+            This advertisement is done via subnets.
+            example : AS1 can have subnet of 198.18.*.* and AS2 can have subnet of 198.21.*.*
+            Now AS1 can advertise AS2 with its gateway router that it can be reached via subnet 198.18.*.*.
+            By this AS2 will learn that all the packets which have destination ip staring with 198.18 will have to go to AS1 via its gateway router.
+
+Internet is scalabe because of this aggregation of networks with subnets.
+
+Now Routing table of AS2 has entries like
+AS1 - Gatway router of AS1   ----- This is found out with eBGP
+Gateway router of AS1 - can be reached via some internal router say D  ---- This is found out linkstate algorithm
+
+
+********************************************************************************************************************
+
+Transport layer protocols.
+
+UDP - connectionless, non reliable, out of order packets, no congestion/flow control, Fast
+      If application needs packets in order it has to handle by its own.
+      Useful in streaming
+
+TCP - Connection oriented(Three way handshake), Reliable, In order packets, Less faster comapred to UDP, cumulative ack,
+      Flow control and congestion control is handled in tcp layer itself.
+      Retransmission of packets based on ACK.
+      Works based on slinding window - Maximum n packets can be sent over the network for which ack is not received yet. Once ACK is received 
+      for x bytes window will be moved to x bytes further and it can send x bytes more.
+
+Flow control - If sender is sending packets faster than what receiver can take then packets will be lost at the receiver end as application is slow to process requests.
+               Receiver end socket has buffer up to which it can hold the data, Once the buffer is full packets will be dropped and it causes retranmission of packets.
+               To solve this TCP can send receiver window size, Based on this sender restricts to send only that many bytes and this avoids retranmissions.
+
+Congestion control - Too much of traffic arriving from different source and converged at particular node causing congestion.
+
+********************************************************************************************************************
+
+SDN (SOftware Defined Network)
+
+Data plane functions is implemented in each of the router but control plane functions are implemented at the remote centralized server.
+remote server make decisions on path and communicated to each router and forwarding tables are populated.
+
+CA - control plane agent in each router talking to remote server.
+
+SDN is desinged to handle east - west traffic, changing network in Data center network
+Because of changing network - Programable solution is required.
+
+Take high path functions(Data plane functions) and implement them in highly efficient hardwares/network switches. 
+These are physical SDN enabled switches(Open flow switch) where data plane is implemented but control plane is moved to some centralised server.
+
+This enables higly efficient control centre software running in Data center and push the routing data to data plane of network switches.
+
+Here only SDN controller alone need to have network topoloy vs earlier model needs to have every router needs to have network topology to run link state algorithm.
+
+Routing, Load balancing, Firewall can be implemented and communicated to SDN via rest based api.
+
+Each router contains forwarding table - 
+   - Match plus action abstraction : match bits in arriving packet, take action.
+      - dest based forwarding - forward based on dest ip address.
+This is called generalized forwarding - Any incoming traffic can be matched to any action like drop/copy/modify/log packet.
+All this generalized forwarding is pushed to forwarding table by SDN remote server which programs this or configures.
+Data plane blindly looks at this forwarding table and takes action.
+
+So basically SDN helps to define many other actions apart from routing like load balancing, firewall or define any other rules etc..
+
+********************************************************************************************************************
+
+Network Virtualization
+
+- In computing, Network virtulization is the process of combining hardware and software network resources and network functionality in to a single software based admin entity, a virtula network.
+Virtualizes the physical network with virtual networks.
+
+Network Function Virtualization
+- Is the software implementing network functions like firewall, routing, load balancing that run on any underlying hardware or VMs. Its not bound to particular hardware.
+
+
+
+
