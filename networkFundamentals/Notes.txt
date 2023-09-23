@@ -176,11 +176,16 @@ well suited for nort and south traffic
 only layer2 network hence only need switches
 easy to use and faster as there are less server to server traffic.
 This can not scale for modern DC netowrk as server to server n/w huge and its causing brodcas storming
+VLAN limitations - 4096 vlans
+STP limitations - need more aggregation switches.
 
-
-Modern DCN topologies-
-leaf-spine topology
+Modern DCN topologies- Clos topology
+leaf-spine topology - Mesh topology
 Fat tree topology
+
+Each leaf connects to each spine.
+Its entirely based on IP routing layer3 network. So, Its scalable and reduntant.
+Leaf and spine are of the same type.
 
 
 
