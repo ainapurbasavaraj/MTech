@@ -119,8 +119,68 @@ Network Virtualization
 - In computing, Network virtulization is the process of combining hardware and software network resources and network functionality in to a single software based admin entity, a virtula network.
 Virtualizes the physical network with virtual networks.
 
-Network Function Virtualization
-- Is the software implementing network functions like firewall, routing, load balancing that run on any underlying hardware or VMs. Its not bound to particular hardware.
+Network Function Virtualization [Virtualised Network model]
+- Is the software implementing network functions like firewall, routing, load balancing that run on any underlying well known hardware or VMs. Its not bound to particular hardware.
+   Traditionally each of these network functions are bound to respective particular hardware. So, One physical node per role.
+
+VNF(Virtual Network Functions) - Implemented by software vendors who doesn't have hardware experience. These VNF run on hypervisors.
+
+
+SDN and NFV are each independent technologies but they can work in tandem in Data center network.
+NFV - Provisions implementaion of VNF( Firewall, Antivirus, LB etc with underlying data center hardware)
+SDN - defines the path, For a give traffic what are the VNF it has to go thru.
+
+********************************************************************************************************************
+
+DATA CENTER NETWORK
+
+Physical compute and storage servers are connected via switches in a huge data centre.
+Servers are arranged in the form of racks and each rack has one Switch which is called Top Of Rack switch.
+This switch will connect servers in this rack with others servers in different network.
+So, Within data centre there is high volume of network and connectivity between each servers are needed as application are evolving from monolith to distributed and microservices.
+With these modern applications more than North south traffic(client server traffic) East west traffic is more signigicant(i.e server to server). Because of microservices a client
+requesting a web page has to go thru multiple servers to fetch the data and respond it back to clients.
+
+Because of this East to West traffic SDN switches are extermely helpful for cost optimisation and speed. 
+Instead of having 1000 switches we can have 10 SDN servers which can handle 1000 SDN enbabled switches which just handles data plane functionality via Openflow protocol.
+SDN enabled switches are less costly compared to traditional switches.
+
+Because of the growing demand from East to West traffic there are many challenges in DCN.
+
+1. High volume of traffic
+   causes network fault and shold provide auto recovery mechanism.
+    - Number of managed objects in cloud DCN is huge because of NFVs
+    - Network needs to detect dynamic VM migrations and elastic scaling of applications.
+     - Boundries are blurred and its very difficult to locate and isolate issues
+    connections faults, performance faults such as congestion and policy faults are some of Network faults.
+Addressing network faults.
+- use of self healing networks.
+- Use of intelligence analysis engine to predict/detect/isolate network faults.
+- Use of SDN and SDN controller for simplified cloud network operations.
+- Bandwidth oversubscription.
+
+TCP Incast
+- N/w pathology that affects many to one communication pattern in datacentres.
+  leads to lot of retransmission.
+Its fundamentally transport layer problem and best solution can be found at TCP level
+
+Infrastucre challenges.
+- DC network cost
+- DC cooling
+- DC cabling
+
+
+DCN evolution - 
+Traditional network topology - access-aggreation-core
+well suited for nort and south traffic
+only layer2 network hence only need switches
+easy to use and faster as there are less server to server traffic.
+This can not scale for modern DC netowrk as server to server n/w huge and its causing brodcas storming
+
+
+Modern DCN topologies-
+leaf-spine topology
+Fat tree topology
 
 
 
