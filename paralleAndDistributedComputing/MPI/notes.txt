@@ -1,0 +1,26 @@
+Tutorial : https://mpitutorial.com/tutorials/mpi-hello-world/
+git : https://github.com/mpitutorial/mpitutorial
+
+
+#create host file with all the node details
+cat host_file 
+node1
+node2
+node3
+
+each node should have ssh connection established in order for MPI to access the node.
+
+create executable with mpiCC -o helloworld helloworld_mpi.c
+
+Copy the 'helloWorld' executable across all the nodes in the cluster.
+Run below command to execute helloworld on the cluster
+
+mpirun -n 4 -hostfile host_file helloworld
+
+Hello world from processor node1, rank 0 out of 4 processors
+Hello world from processor node1, rank 1 out of 4 processors
+Hello world from processor node3, rank 3 out of 4 processors
+Hello world from processor node2, rank 2 out of 4 processors
+
+Here process 1 and 2 running on node1 and 3, 4 running on node2 and node3 respectively.
+ 
