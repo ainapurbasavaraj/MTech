@@ -1,0 +1,59 @@
+
+Lecture 2:
+
+Locality of Reference:
+Big data systems need to move large volumes of data
+   -- To reduce the latency bring the data closer to the compute.
+
+It is the tendency of processor to access the same set of memory locations repetatively.
+
+Hit Ratio - The performance of cache
+  Hit + Miss = Total cpu reference
+  Hit Ratio = Hit/(Hit+Miss)
+
+Access Time of Memories
+Tavg = h * Tc + (1-h)*(Tm+Tc)
+h - hit ratio
+Tc - Time to access cache
+Tm - Time to access main memory
+
+Temporal locality: Data that is accessed is likely to be accessed again in near future.
+        ex : Instructions in the body of loop, local variables, A recent social media post, Netflix region
+
+Spatial locality: Data accessed is likely located adjacent to data that is to be accessed in near future.
+        ex : Arrays, linear sequence of instructions,
+
+*******************************************************************************************************************
+Lecuture 3:
+
+UMA(Uniform Memory Access) - Every processor is connected to a common memory
+NUMA(Non Uniform Memory Access) - Each processor has its own memory
+
+Interconnection Networks between memorey and cpu
+crossbar switch - faster, dedicated line
+Omega switch - cheaper, crossbar shared switches
+
+Flynn's Taxanomy:
+SISD - Single Instruction Single Data
+SIMD - Single Instruction Multiple Data
+MISD - Multiple Instuction Single Data
+MIMD - Multiple Instruction Multiple Data
+
+High parallelism may not lead to high speed - Depends on granularity.
+Granularity - Average number of compute instructions before communication is needed across processor.
+If more commnunication is required, Then its good to go with multi processor/computer systems.
+If less communication then go with distributed systems.
+
+Amhdal's Law
+• T(1) : Time taken for a job with 1 processor
+• T(N) : Time taken for same job with N processors
+• Speedup S(N) = T(1) / T(N)
+• S(N) is ideally N when it is a perfectly parallelizable program, i.e. data parallel with no sequential component
+• Assume fraction of a program that cannot be parallelised (serial) is f and 1-f is parallel
+• S(N) = T(1) / ( f * T(1) + (1-f) * T(1) / N )   Only parallel portion is faster by N
+• S(N) = 1 / ( f + (1-f) / N )
+
+10% of a program is sequential and there are 100 processors. What is the effective speedup ?
+S(N) = 1 / ( f + (1-f) / N )
+S(100) = 1 / ( 0.1 + (1-0.1) / 100 ) = 1 / 0.109
+= 9.17 (approx)
