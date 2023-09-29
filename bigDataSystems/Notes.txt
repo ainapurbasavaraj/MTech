@@ -18,3 +18,26 @@ Amhdal's Law
 S(N) = 1 / ( f + (1-f) / N )
 S(100) = 1 / ( 0.1 + (1-0.1) / 100 ) = 1 / 0.109
 = 9.17 (approx)
+
+
+Locality of Reference:
+Big data systems need to move large volumes of data
+   -- To reduce the latency bring the data closer to the compute.
+
+It is the tendency of processor to access the same set of memory locations repetatively.
+
+Hit Ratio - The performance of cache
+  Hit + Miss = Total cpu reference
+  Hit Ratio = Hit/(Hit+Miss)
+
+Access Time of Memories
+Tavg = h * Tc + (1-h)*(Tm+Tc)
+h - hit ratio
+Tc - Time to access cache
+Tm - Time to access main memory
+
+Temporal locality: Data that is accessed is likely to be accessed again in near future.
+        ex : Instructions in the body of loop, local variables, A recent social media post, Netflix region
+
+Spatial locality: Data accessed is likely located adjacent to data that is to be accessed in near future.
+        ex : Arrays, linear sequence of instructions,
