@@ -44,7 +44,7 @@ Granularity - Average number of compute instructions before communication is nee
 If more commnunication is required, Then its good to go with multi processor/computer systems.
 If less communication then go with distributed systems.
 
-Amhdal's Law
+Amhdal's Law   ---> speed is limited by sequential part of the program.
 • T(1) : Time taken for a job with 1 processor
 • T(N) : Time taken for same job with N processors
 • Speedup S(N) = T(1) / T(N)
@@ -57,3 +57,47 @@ Amhdal's Law
 S(N) = 1 / ( f + (1-f) / N )
 S(100) = 1 / ( 0.1 + (1-0.1) / 100 ) = 1 / 0.109
 = 9.17 (approx)
+
+Amdhal's law doesn't consider network/communication delay, context switch, I/O etc..
+
+Gustafson-Barsis Las --- Solver larger problems when you have more processors. Increase the workload with increase in number of processor.
+This law is about how much workload can be processed with N processor.
+
+Let W be the execution workload of the program before adding resources f is the sequential part of the workload
+So W = f * W + (1-f) * W
+Let W(N) be larger execution workload after adding N processors
+So W(N) = f * W + N * (1-f) * W
+Parallelizable work can increase N times
+The theoretical speedup in latency of the whole task at a fixed interval time T S(N) = T * W(N) / T * W
+= W(N) / W = ( f * W + N * (1-f) * W) / W
+S(N) = f + (1-f) * N
+S(N) is not limited by f as N scales
+
+
+Data Access strategies
+
+1. Replication - replicate all data across nodes of the distributed system
+    - Higher storage cost
+    - All data accessed from local disk so no runtime communication on network
+    - High performance with parallel process
+    - Fail over across replicas
+  concerns: Keep replicas in sync - various consistency models between readers and writers.
+
+2. Partition - partition the data typically equally to all the nodes of distributed systems
+     - High query cost if query needs to access multiple partitions.
+     - Works well for tasks/algo is data parallel.
+     - Works well when there is locality of reference within partition.
+  concerns: 
+     - Partition balancing
+     - sharding problems
+     - How to improve locality of reference
+
+3. Dynamic communication : Communicate only the data that is required.
+    cost : high network cost for loosely couupled systems and data set to be exchanged is large
+   Advantage: Minimal communication cost
+   concern: Highly available and performant network
+
+4. Networked storage: Common storage on the network (SAN, NAS)
+      common storage on the cloud - Amazon s3
+
+
