@@ -100,4 +100,60 @@ Data Access strategies
 4. Networked storage: Common storage on the network (SAN, NAS)
       common storage on the cloud - Amazon s3
 
+*******************************************************************************************************************
+Lecture 4
 
+Cluser computing
+- Peep to peer computing
+- clinet server computing
+- Cloud and distributed computing
+Hadoop cluster architecture
+
+
+Data Analytics:
+  -- Used to analyse the structured and unstructured data to derive meaningfule business advantages.
+
+Descriptive analysis : Provides ability to alert, explore and report mostly using internal and external data
+   - Usually data from legacy systems, ERP CRM
+   - Relational data from data warehouse
+   - Structred and not very large data sets
+   Solves questions like
+    What happened? and why happened?
+    Analytics 1.0
+
+Predictive Analysis: Use the data to predict the future
+    -- Based on large, unstructred data gathered over period of time
+    -- Analytics 2.0
+
+Prescriptive Analysis : Which use data from past to make predictions and also recommendations
+    -- Data is blend from big data and legacy systems
+    -- Analytics 3.0 - Descriptive + predictive + prescriptive
+    -- What, when, why it will happen and what is the action to be taken?
+
+Big Data analtics : 
+    -- Wortking with datasets with huge volume, variety and velocity beyond storage capabilities of RDBMS
+    -- Locality of reference - move code closer to data
+    -- To gain competive advantage
+    -- Batch processing and stream processing.
+    -- Lot of technologies available
+What is not Big Data system
+ * Not to meant to replace RDBMS
+ * Depending on usecase need to develop techstach and build big data pipeline.
+ * Not a volume game
+
+Adoption challenges:
+   -- Executive sponsership for big data analysis activities
+   -- Sharing the data across different business units.
+   -- Right skillset
+   -- To use structured or unstructured data
+   -- Storage and processing capbilities - In house or cloud ?
+   -- Determining what to do with insights created from big data.
+
+Technology challenges:
+   -- Scale - horizontal scaling
+   -- Security 
+   -- Schem : need to have dynamic schema
+   -- Continuous Availability
+   -- consistency
+   -- partion tolerant
+   -- Data quality
