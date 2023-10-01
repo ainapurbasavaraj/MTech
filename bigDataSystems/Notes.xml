@@ -1,0 +1,159 @@
+
+Lecture 2:
+
+Locality of Reference:
+Big data systems need to move large volumes of data
+   -- To reduce the latency bring the data closer to the compute.
+
+It is the tendency of processor to access the same set of memory locations repetatively.
+
+Hit Ratio - The performance of cache
+  Hit + Miss = Total cpu reference
+  Hit Ratio = Hit/(Hit+Miss)
+
+Access Time of Memories
+Tavg = h * Tc + (1-h)*(Tm+Tc)
+h - hit ratio
+Tc - Time to access cache
+Tm - Time to access main memory
+
+Temporal locality: Data that is accessed is likely to be accessed again in near future.
+        ex : Instructions in the body of loop, local variables, A recent social media post, Netflix region
+
+Spatial locality: Data accessed is likely located adjacent to data that is to be accessed in near future.
+        ex : Arrays, linear sequence of instructions,
+
+*******************************************************************************************************************
+Lecuture 3:
+
+UMA(Uniform Memory Access) - Every processor is connected to a common memory
+NUMA(Non Uniform Memory Access) - Each processor has its own memory
+
+Interconnection Networks between memorey and cpu
+crossbar switch - faster, dedicated line
+Omega switch - cheaper, crossbar shared switches
+
+Flynn's Taxanomy:
+SISD - Single Instruction Single Data
+SIMD - Single Instruction Multiple Data
+MISD - Multiple Instuction Single Data
+MIMD - Multiple Instruction Multiple Data
+
+High parallelism may not lead to high speed - Depends on granularity.
+Granularity - Average number of compute instructions before communication is needed across processor.
+If more commnunication is required, Then its good to go with multi processor/computer systems.
+If less communication then go with distributed systems.
+
+Amhdal's Law   ---> speed is limited by sequential part of the program.
+• T(1) : Time taken for a job with 1 processor
+• T(N) : Time taken for same job with N processors
+• Speedup S(N) = T(1) / T(N)
+• S(N) is ideally N when it is a perfectly parallelizable program, i.e. data parallel with no sequential component
+• Assume fraction of a program that cannot be parallelised (serial) is f and 1-f is parallel
+• S(N) = T(1) / ( f * T(1) + (1-f) * T(1) / N )   Only parallel portion is faster by N
+• S(N) = 1 / ( f + (1-f) / N )
+
+10% of a program is sequential and there are 100 processors. What is the effective speedup ?
+S(N) = 1 / ( f + (1-f) / N )
+S(100) = 1 / ( 0.1 + (1-0.1) / 100 ) = 1 / 0.109
+= 9.17 (approx)
+
+Amdhal's law doesn't consider network/communication delay, context switch, I/O etc..
+
+Gustafson-Barsis Las --- Solver larger problems when you have more processors. Increase the workload with increase in number of processor.
+This law is about how much workload can be processed with N processor.
+
+Let W be the execution workload of the program before adding resources f is the sequential part of the workload
+So W = f * W + (1-f) * W
+Let W(N) be larger execution workload after adding N processors
+So W(N) = f * W + N * (1-f) * W
+Parallelizable work can increase N times
+The theoretical speedup in latency of the whole task at a fixed interval time T S(N) = T * W(N) / T * W
+= W(N) / W = ( f * W + N * (1-f) * W) / W
+S(N) = f + (1-f) * N
+S(N) is not limited by f as N scales
+
+
+Data Access strategies
+
+1. Replication - replicate all data across nodes of the distributed system
+    - Higher storage cost
+    - All data accessed from local disk so no runtime communication on network
+    - High performance with parallel process
+    - Fail over across replicas
+  concerns: Keep replicas in sync - various consistency models between readers and writers.
+
+2. Partition - partition the data typically equally to all the nodes of distributed systems
+     - High query cost if query needs to access multiple partitions.
+     - Works well for tasks/algo is data parallel.
+     - Works well when there is locality of reference within partition.
+  concerns: 
+     - Partition balancing
+     - sharding problems
+     - How to improve locality of reference
+
+3. Dynamic communication : Communicate only the data that is required.
+    cost : high network cost for loosely couupled systems and data set to be exchanged is large
+   Advantage: Minimal communication cost
+   concern: Highly available and performant network
+
+4. Networked storage: Common storage on the network (SAN, NAS)
+      common storage on the cloud - Amazon s3
+
+*******************************************************************************************************************
+Lecture 4
+
+Cluser computing
+- Peep to peer computing
+- clinet server computing
+- Cloud and distributed computing
+Hadoop cluster architecture
+
+
+Data Analytics:
+  -- Used to analyse the structured and unstructured data to derive meaningfule business advantages.
+
+Descriptive analysis : Provides ability to alert, explore and report mostly using internal and external data
+   - Usually data from legacy systems, ERP CRM
+   - Relational data from data warehouse
+   - Structred and not very large data sets
+   Solves questions like
+    What happened? and why happened?
+    Analytics 1.0
+
+Predictive Analysis: Use the data to predict the future
+    -- Based on large, unstructred data gathered over period of time
+    -- Analytics 2.0
+
+Prescriptive Analysis : Which use data from past to make predictions and also recommendations
+    -- Data is blend from big data and legacy systems
+    -- Analytics 3.0 - Descriptive + predictive + prescriptive
+    -- What, when, why it will happen and what is the action to be taken?
+
+Big Data analtics : 
+    -- Wortking with datasets with huge volume, variety and velocity beyond storage capabilities of RDBMS
+    -- Locality of reference - move code closer to data
+    -- To gain competive advantage
+    -- Batch processing and stream processing.
+    -- Lot of technologies available
+What is not Big Data system
+ * Not to meant to replace RDBMS
+ * Depending on usecase need to develop techstach and build big data pipeline.
+ * Not a volume game
+
+Adoption challenges:
+   -- Executive sponsership for big data analysis activities
+   -- Sharing the data across different business units.
+   -- Right skillset
+   -- To use structured or unstructured data
+   -- Storage and processing capbilities - In house or cloud ?
+   -- Determining what to do with insights created from big data.
+
+Technology challenges:
+   -- Scale - horizontal scaling
+   -- Security 
+   -- Schem : need to have dynamic schema
+   -- Continuous Availability
+   -- consistency
+   -- partion tolerant
+   -- Data quality
