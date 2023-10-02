@@ -247,6 +247,24 @@ Eventual consistency - State in which reads by different clients, immediately fo
 
 
 
+*******************************************************************************************************************
+Lecture 6
+
+Level of Consistency
+
+Strict - A read of data item from any node results in same data across all nodes
+
+Linearisable - Allows read by other client while that value is being updated.
+
+Sequential -  Updates to a values should be read by other nodes sequentially. It means x is updated 1st and Y is updated next, Then node reading X and Y should get updated value of X first and then Y.
+
+Causal - Node sees writes to x and then writes to y. Means only casually connected to writes and reads need to be ordered. Example value of X is used to write Y. So all the nodes must observer write to x first then writes to y.
+
+Eventual - If there are no writes for some time then all threads agree on latest value of data item.
+
+
+Majority RW - Read majority of nodes or write majority of nodes to get causal consistency.
+
 
 
 
