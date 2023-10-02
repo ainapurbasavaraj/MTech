@@ -285,4 +285,19 @@ Big data analytics life cycle
 8. Data visualisation
 9. Untilisation of analysis results
 
+*******************************************************************************************************************
+Lecture 7
 
+TOP DOWN DESIGN 
+   -   Sequential - f1 ->f2->f3
+   -   Parallel   - f1 ->f2   
+                              f4
+                       -> f2
+
+
+Data parallelism - Static partion is done and assign it to number of available processor. Here data partion may be balanced or un balanced.
+Tree level parallelism - Divide problem in to subproblem in tree strucutre and assign it to those many processors. (Quick sort)
+
+Task parallelism - Parallel tasks that work on same data
+
+Request parallelism - Scalable execution of independent tasks in parallel. Execute same code but in parallel instances (Client server models)
