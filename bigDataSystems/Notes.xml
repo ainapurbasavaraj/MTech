@@ -232,12 +232,19 @@ Forward recovery - Reconstruct the state based on the data.
 CAP - Theorem
     A distyibuted system running over a cluster can only provide 2 of the 3 properties.
     In effect, When there is partition, The system has to decide whehter to pick consistency and availability.
-   i.e CP or AP
+   i.e CP or AP because partion is bound to happen in distributed systems.
 Consistency: A read of data item from any node results in same data across multiple nodes
 
 Availabilty: A read/write request always acknowledged in form of succes or failure in reasonable time
 
 Partion Tolerance: System can continue to function when communication outages split the cluster into multiple silo and can still service read/write requests
+
+BASE - Base is a database design principle based on CAP theorem.
+statnds for 
+Basically Available - always repsonsds with success or failure
+Soft state - State where db node is not in sync with other nodes.
+Eventual consistency - State in which reads by different clients, immediately following a wrtie to database may not return consistent results.
+
 
 
 
