@@ -265,9 +265,24 @@ Eventual - If there are no writes for some time then all threads agree on latest
 
 Majority RW - Read majority of nodes or write majority of nodes to get causal consistency.
 
+Different types of consistency models
+ When Network partition happens there can be many secnarios for fault tolerance. Below are some of the use cases that can be configured in DB / big data systems based on usecase.
+Example, Cluster has 9 nodes and due to network partion cluster has divided in to 2 partition one with 5 nodes and other with 4 nodes with new primary node of new cluster.
+- causal consistency with durable writes -  Read and write happens with majority of clusters, Read/write to non majority cluster should faile.
+- causal consistency with non durable writes - Read happens with majority cluster but write will be succeeded for 1(so it will immediately succeed on non majority cluster) - This write may be rolled back when immediate read operation is done on majority nodes.
+- eventual consisitency with durable wirtes - Writes may not be seen immediately but eventually. read local and write majority
+- eventual consistency but no durablitiy - read local and write 1 - Again this write may be rolled back as is the case with causal consistency with no durable wirtes.
 
 
-
-
+Big data analytics life cycle
+1. Business case Evaluation
+2. Data Identification
+3. Data acquisiton and filtering
+4. Data extraction
+5. Data valiation and cleansing
+6. Data aggregation and represenations
+7. Data analysis
+8. Data visualisation
+9. Untilisation of analysis results
 
 
