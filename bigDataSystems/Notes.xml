@@ -157,3 +157,92 @@ Technology challenges:
    -- consistency
    -- partion tolerant
    -- Data quality
+
+*******************************************************************************************************************
+Lecture 5
+
+Issues with Map Reduce
+- Latency is high as reading and writing scripts from disks
+- Poor filt for Iterative applications such as ML and graph algo
+- Not in memory computing. Spark is in memory computing.
+
+Reliability - An inverse indicator of failure rate. How soon system will fail.
+
+MTTF - Mean Time To Failure is an Averaged value. 
+      Total number of failures / Total number of units
+Failure Rate = 1/MTTF
+Increase in the MTTF value is the objective.
+
+MTTR - Mean Time to Recovery
+     - Total number of hours of maintainance/ Total number of repairs
+
+MTTD - Mean Time to Diagnose
+MTBF - Mean Time Between Failures - MTTD + MTTR + MTTF
+
+MTTF reliablity
+Serial Assembly system - C = A + B
+MTTF of system = 1/SUM(1/MTTFi) for all components i
+Failure rate = SUM(1/MTTFi) for all components i
+
+Parallel Assembly system = C = A or B
+MTTF of C = MTTF of A + MTTF of B  because both A and B have to fail for C to fail
+MTTF of system = SUM(MTTFi) for all components i
+Failure rate = 1/SUM(MTTFi) for all component i
+
+MTTF availability
+Availability = Time system is UP and accessible/Total time observer
+Availablity = MTTF/(MTTD* + MTTR + MTTF) - Unless specified MTTD is zero.
+            = MTTF/MTBF
+System is highly available when
+MTTF is high
+MTTR is low
+
+Problem:
+A node is cluster failed every 100 hour while other parts never fail. On failure of the node whole system needs to be shutdown, faulty node replaced and system.
+This takes 2 hours, The application needs to be restarted which takes 2 hours.
+
+what is availabilty?
+If downtime is $80k per hour, what is the yearly cost?
+Answer - This is serial assembly
+        MTTF = 1/(1/100)
+             = 100
+
+        Availablity = 100/ 100 + 2 + 2
+                    = 0.961
+
+         yearly cost = 1 - 0.961 = 0.039
+                     for 100 hrs/24 hrs = 4.16 days
+                      for month 30/4.16 = 7.211 - 7.211 * 0.039 = 0.28125
+                      for year 0.28125 * 12 = 3.375 = 3.375 * 80K = $270k
+                     
+                
+
+Fault tolernace configurations - 
+
+Load Balanced : Active - Active - costly
+Hot standby : Active - passive - One is active and other is standby - Takes few seconds
+Warm standby : Software installed on secondary and up and running, Once Active is down seconday is configured - few minutes
+Cold standby : Secondary node act as backup for an identical primary system - Secondary is installed and configured after active fails - Takes few hours.
+
+Fault tolerant cluster recovery
+Diagnosis - heart beat messages
+Backward recovery - Rollback to a particular checkpoint.
+Forward recovery - Reconstruct the state based on the data.
+
+CAP - Theorem
+    A distyibuted system running over a cluster can only provide 2 of the 3 properties.
+    In effect, When there is partition, The system has to decide whehter to pick consistency and availability.
+   i.e CP or AP
+Consistency: A read of data item from any node results in same data across multiple nodes
+
+Availabilty: A read/write request always acknowledged in form of succes or failure in reasonable time
+
+Partion Tolerance: System can continue to function when communication outages split the cluster into multiple silo and can still service read/write requests
+
+
+
+
+
+
+
+
