@@ -301,3 +301,71 @@ Tree level parallelism - Divide problem in to subproblem in tree strucutre and a
 Task parallelism - Parallel tasks that work on same data
 
 Request parallelism - Scalable execution of independent tasks in parallel. Execute same code but in parallel instances (Client server models)
+
+Some MAP REDUCE Examples
+
+*******************************************************************************************************************
+Lecture 8
+
+HADOOP Architecutre 
+
+client server and peep to peer communication
+
+master node and slave nodes
+
+Master Node
+   - Name Node - HDFS name space metadata manager
+   - YARN cluster level resource manager
+
+Slave Node
+   - Data Node - Node level data manager - Stores actual data
+   - Node manager - YARN node level resource manager
+   - MAP, REDUCE tasks
+
+HDFS features 
+   - Distributed java based file system that sits on top of natif FS
+   - Data is split in to large blocks : 128MB
+   - Enables storage of very large files across nodes of Hadoop cluster
+   - Scale through parallel data processing
+      - 1 node with 1 TB storage with IO bandwidth of 400 mb/s vs 10 node with 10 GB storage with 400mb/s - Second one is faster and scalable
+   - Fault tolerant through replication - default 3 replicas
+   - Consistency : Write once and read many times
+   - cost : Adding more nodes is cost effective
+   - Variety and volume of Data - structured, unstructured, semi structured and Hude Terabyte and peta bytes of data
+   - Data integrity : Verifys checksum to preserve data integrity.
+   - Data locality : Bring computation closer to the data
+
+Client contacts Namenode on Master node and namenode checks meta data and responsds back with Data node information where client has to connect to based on location or availability of data nodes.
+
+NameNode:
+   FsImage - contains mapping of blocks to file, hierararchy and file operations/operations
+   edit logs - Transaction log of changes to metadata in FsImage - records each change
+
+   - Does not store any data - only meta data
+   - HA can be configured
+   - Receives heartbeat and block report from all Data nodes in cluster
+   - Ensure replication factor is maintained.
+
+   On Startup - 
+      - check for status of Datanodes on slaves
+      - Gets hearbeat and block report from data nodes
+      - check the replication factor
+      - Updates meta data
+      - Reads FSImages and editlogs from dist to memory
+      - Applies edit log changes to FSImages
+
+Secondary Name node - constantly reads all the file system and metadata from RAM of the NameNode and writes to its local file system.
+                     - Downloads Edit logs from namenodes and applies it FSImage on regualr check points.
+                     - Thhis node takes over when primary is down.
+                     - Not Hot standby
+
+HA Config of Name node
+   -   Data node sends hearbeat to both name nodes
+   - Zookeeper session used for failure detection and election of new active.
+   - Journal Nodes/NFS - Write happens Only via Active node then passive name node will read from Journal Node.
+
+Replica placement strategy with Rack awareness
+   -   First replica is placed on the same node as client
+   -    Second replica is placed on node that is present on different rack
+   -   Third replica is places as second but on a different node
+   -    For replica factor greater than 3 - 4th replica can be placed randomly which satisfies upper limit per rack 
