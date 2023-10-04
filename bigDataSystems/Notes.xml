@@ -369,3 +369,18 @@ Replica placement strategy with Rack awareness
    -    Second replica is placed on node that is present on different rack
    -   Third replica is places as second but on a different node
    -    For replica factor greater than 3 - 4th replica can be placed randomly which satisfies upper limit per rack 
+
+*******************************************************************************************************************
+Lecture 9
+
+MAP REDUCE - Write pipelines and read pipeline
+
+MapReduce program
+   -   RecordReader - reads each record created by input splitter to pass key-valu pair to map
+   -   Map : userdefined function to create key, value pair from input key, value pair
+   -   combiner: optional reducer for better performance - can be same as reduced code.
+   -   partitioner: Takes intermediate output from map and shards it to different reducers.
+            -   Ensuers same key is sent to same reducer.
+   -   Reduce
+      -   shuffle and sort
+      -   Reducer
