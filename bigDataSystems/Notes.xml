@@ -375,6 +375,21 @@ Lecture 9
 
 MAP REDUCE - Write pipelines and read pipeline
 
+   -   Client sends request for read/write 
+   -   Name node receives the request and check its metadata and fetch the datanodes where this block belongs.
+   -   Name node then sends these datanodes info to client (DN1, DN2 and DN3 in case of 3 replicas)
+   -   client then creates TCP/IP conection to lets say DN1.
+   -   client informs DN1 to be ready to receive the block and provides IP of DN2 and DN3 for replication.
+   -   With this pipeline will be setup from client to for example DN1 then DN1 to DN2 and then DN2 to DN3.
+   -   Then client will start transferring the data to DN1, Then DN1 replicates the data to DN2 and then DN2 replicates data to DN3.
+   -   Once the data is transferred, Datanode will update client that data written successfully in reverse manner like DN3-->DN2-->DN1-->client
+   -   Client inform namenode that data has been written successfully
+   -   Namenode updates metadata and then client shutdowns connection.
+
+Data can be written parallely by setting up multiple pipelines. For ex one pipeline for each block request.
+Read request are served by chosing namenodes which is closes to client. This reduces read latency. Reads are parallel.
+
+
 MapReduce program
    -   RecordReader - reads each record created by input splitter to pass key-valu pair to map
    -   Map : userdefined function to create key, value pair from input key, value pair
