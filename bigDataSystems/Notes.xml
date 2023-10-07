@@ -138,7 +138,7 @@ Big Data analtics :
     -- Lot of technologies available
 What is not Big Data system
  * Not to meant to replace RDBMS
- * Depending on usecase need to develop techstach and build big data pipeline.
+ * Depending on usecase need to develop techstack and build big data pipeline.
  * Not a volume game
 
 Adoption challenges:
@@ -152,7 +152,7 @@ Adoption challenges:
 Technology challenges:
    -- Scale - horizontal scaling
    -- Security 
-   -- Schem : need to have dynamic schema
+   -- Schema : need to have dynamic schema
    -- Continuous Availability
    -- consistency
    -- partion tolerant
@@ -323,7 +323,7 @@ Slave Node
    - MAP, REDUCE tasks
 
 HDFS features 
-   - Distributed java based file system that sits on top of natif FS
+   - Distributed java based file system that sits on top of native FS
    - Data is split in to large blocks : 128MB
    - Enables storage of very large files across nodes of Hadoop cluster
    - Scale through parallel data processing
@@ -384,3 +384,34 @@ MapReduce program
    -   Reduce
       -   shuffle and sort
       -   Reducer
+
+*******************************************************************************************************************
+Lecture 10
+
+YARN - Yet Another Resource Negotiotor
+
+ - Key role is to schedule resources in the cluster
+ - Takes request from client and talks to node managers for allocation
+- creates appmaster
+- client can contact appmaster
+
+AppMaster
+   - Negoritates resources from resouce manager per application for starting container on nodes.
+   - Sends periodic health status of application containers and track progress
+   - Talks via Node Manager for updates and usage reports to resource manager
+   - Clients can directly talk to appmaster
+
+conatier
+
+Workflow
+1. client submits the application/job with specs to start AppMaster
+2. RM asks nodemanager to start container and then launches AppMaster  
+3. AppMaster on startup registers with ResourceManager(RM). Now client can directly contact to AppMaster
+4. As the app executes, The AppMaster negotiotes resouces in the form of conainters vai the resource request protocol invlolving RM
+5. As a container is allocated successfully for an app, AppMaster works with the nodemanager on same of diff node to launch the container.
+6. App specific code insided the container provides runtime information to the appmaster for progress, status etc..
+7. Client can directly communicate with appMaster for progress
+8. On complettion of job AppMaster deregisters from RM and shuts down so that containers allocated can be re-purposed.
+
+Capacity scheduler
+min capacity, max capacity, user limit factor   -- Go thru the slides
