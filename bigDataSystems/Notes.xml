@@ -430,3 +430,37 @@ Workflow
 
 Capacity scheduler
 min capacity, max capacity, user limit factor   -- Go thru the slides
+
+*******************************************************************************************************************
+Lecture 11
+
+PIG - Gives developer a simpler scripting interface to manipulate data using a higher level programming interface
+    - similar to sql
+    - pig script is translated to map reduce tasks by the pig runtime and executed on hadoop cluster
+
+    - programs are written in Pig Latin - scripting language
+
+PIG Data model
+    Atom - Basic data type like byte, int
+
+    Tuple -  Ordered set of fields of various types, like a row in RDBMS table
+      eg : (andy, 25)
+
+    Bag : An unordered set of tuples. A bag can be inside tuple
+      eg : {(andy,65), (ram, 23, 6000)}
+       inner bag : (1, {(1,2,3)})
+
+    Map : key value pair
+      eg : [name#andy, age#25]
+
+    Relation: A bag but not an inner bag which can be inside a tuple. Like table in RDBMS.
+
+HBASE : 
+  HDFS provides sequential access to data
+  HBASE provides random access capability of large files in HDFS. Hash tables, key value stores
+  Built for wide tables with many attributes
+  column oriented storage.
+  strongly consistent
+  can be used when need to lookup data in large data store.
+
+  columnar storage
