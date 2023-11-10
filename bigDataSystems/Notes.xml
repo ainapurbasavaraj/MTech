@@ -432,7 +432,7 @@ Capacity scheduler
 min capacity, max capacity, user limit factor   -- Go thru the slides
 
 *******************************************************************************************************************
-Lecture 11
+Lecture 11 - Hadoop technology ecosystems
 
 PIG - Gives developer a simpler scripting interface to manipulate data using a higher level programming interface
     - similar to sql
@@ -455,7 +455,7 @@ PIG Data model
 
     Relation: A bag but not an inner bag which can be inside a tuple. Like table in RDBMS.
 
-HBASE : 
+HBASE : Key value store
   HDFS provides sequential access to data
   HBASE provides random access capability of large files in HDFS. Hash tables, key value stores
   Built for wide tables with many attributes
@@ -463,4 +463,30 @@ HBASE :
   strongly consistent
   can be used when need to lookup data in large data store.
 
-  columnar storage
+  columnar storage - to leverage spatial locality
+    - Is about grouping multiple columns in to column family
+
+HIVE: Data warehouse
+   Provides way to process large structured data in hadoop.
+   Data warehouse on Hadoop/HDFS
+   SQL like query interface - HiveQL
+      -   Its not RDBMS
+      -   Not for real-time queries with row level updates
+   Meant for OLAP type quereies
+   Contains execution engine which transaltes Hive query in to map reduce jobs
+
+SQOOP - SQL to Hadoop and Hadoop to SQL
+         Cannot ingest continuous stream of data.
+         Its limited to structured data.
+
+FLUME - To move large non relational data : streaming data eg. logs
+         Event driven
+         More reliable
+
+Zookeeper:
+   Provides coordination system
+
+Oozie : Scheduler for hadoop jobs
+   It maintains metadata.
+   Check Master is working fine or not
+
