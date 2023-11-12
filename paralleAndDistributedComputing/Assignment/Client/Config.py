@@ -1,5 +1,5 @@
 
-SERVER_IP =  "172.31.17.48"
+SERVER_IP =  "localhost"
 SERVER_PORT = "8800" 
 
 def getServerIp():

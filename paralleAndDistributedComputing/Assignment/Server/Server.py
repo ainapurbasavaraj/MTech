@@ -39,7 +39,13 @@ while True:
     #If request is to get peer metadata
     elif jdata.get('File', None):
         metadata = rService.GetClientData(jdata['File'])
-        con.send(metadata.getJsonMetadata().encode())
+        data = None
+        if metadata:
+            data = metadata.getJsonMetadata().encode()
+        else:
+            print("This file is not served by any peer")
+            data = "None".encode()
+        con.send(data)
     
     print('Send data to client success!')
 

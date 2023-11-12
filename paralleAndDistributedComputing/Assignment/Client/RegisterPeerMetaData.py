@@ -35,4 +35,4 @@ def registerPeerMetadata(peerPort, filename):
         print("Metadata registration successful!!")
         
     sock.close()
-    print('Connection Closed.')
+    #print('Connection Closed.')

@@ -42,6 +42,10 @@ def closeConnection(sock):
 
 def downloadFile(peerServerDetails):
     print("Peer server details : %s " %peerServerDetails)
+    if peerServerDetails == "None":
+        print("Input file is not served by any peer!")
+        return
+
     serverDetails = json.loads(peerServerDetails)
     ip = serverDetails["Ip"]
     port = serverDetails["Port"]
