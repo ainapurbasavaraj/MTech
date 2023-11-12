@@ -5,7 +5,7 @@ import Client
 
 def serveAsPeer(host, port):
     # Initialize Socket Instance
-    sock = socket.socket()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     #print ("Socket created successfully.")
 
     # binding to the host and port

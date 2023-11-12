@@ -3,15 +3,15 @@ import sys
 import json
 import os
 import shutil
+import serverConfig
 
 # total arguments
 n = len(sys.argv)
 filename = sys.argv[1]
 
-
 def getSocketConnection(ip, port):
     # Initialize Socket Instance
-    sock = socket.socket()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     #print ("Socket created successfully.")
 
     # Connect socket to the host and port
@@ -22,8 +22,9 @@ def getSocketConnection(ip, port):
     return sock
 
 def getPeerServerDetails(filename):
-    port = 8800
-    host = 'localhost'
+    port = serverConfig.getServerPort()
+    host = serverConfig.getServerIp()
+
     sock = getSocketConnection(host, port)
     SendData = '{"File" : "%s"}' %(filename)
     sock.send(SendData.encode())
