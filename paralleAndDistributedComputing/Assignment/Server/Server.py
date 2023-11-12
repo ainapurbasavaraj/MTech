@@ -30,12 +30,13 @@ while True:
     data = con.recv(1024)
     jdata = json.loads(data.decode())
 
+    #If request is to register peer metadata
     if jdata.get('Register', None):
         registerData = jdata['Register']
         cData = CMetaData.ClientMetadata(registerData["Ip"], registerData["Port"], registerData["FileName"])
         rService.RegisterClientInfo(registerData["FileName"],cData)
         con.send("OK".encode())
-        
+    #If request is to get peer metadata
     elif jdata.get('File', None):
         metadata = rService.GetClientData(jdata['File'])
         con.send(metadata.getJsonMetadata().encode())

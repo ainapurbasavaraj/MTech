@@ -49,17 +49,16 @@ if n < 3:
 # Defining port and host
 port = sys.argv[1]
 host = ''
-
 fileName = "%s" %(sys.argv[2])
 
 #Register to server as peer service to serve this file
 RegisterPeerMetaData.registerPeerMetadata(port, fileName)
 
-print("This Peer is ready to serve file : %s" %fileName)
+print("This Peer is ready to serve file : %s \n" %fileName)
 
 def getUserInput():
-    data = input("""Press 1 if you want to download new file from server : \n
-Press 2 if you want to serve as Peer server for other clients : """)
+    data = input("""Press 1 : To download new file from server : \n
+Press 2 : To serve as Peer server for other clients : """)
 
     return data
 
@@ -69,13 +68,13 @@ while (data):
         fname = input("Enter file name to download : ")
         Client.downloadFileFromPeer(fname)
     elif (int(data) == 2):
-        print("Serving as peer service...")
+        print("Serving as peer service...\n")
         try:
             serveAsPeer(host, port)
         except:
             print("Stopped serving as peer service for file : %s" %fileName)
     else:
-        print("!!Closing the service!!")
+        print("\n!!Closing the service!!\n")
         break
 
     data = getUserInput()

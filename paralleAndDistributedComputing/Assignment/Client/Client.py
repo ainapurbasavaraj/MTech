@@ -62,7 +62,7 @@ def downloadFile(peerServerDetails):
         file.write(line)
         line = sock.recv(1024)
 
-    print('File %s has been received successfully.' %fname)
+    print('File %s has been received successfully.\n\n' %fname)
 
     file.close()
     closeConnection(sock)
