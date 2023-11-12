@@ -16,8 +16,6 @@ port = sys.argv[1]
 host = ''
 fileName = "%s" %(sys.argv[2])
 
-stop_thread = False
-
 def serveAsPeer(host, port):
     # Initialize Socket Instance
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,12 +31,7 @@ def serveAsPeer(host, port):
     while True:
         # Establish connection with the clients.
 
-        print ("waiting for connections from other peers...")
-
-        #Stop the thread if we need to
-        global stop_thread
-        if stop_thread:
-            break
+        #print ("waiting for connections from other peers...")
         
         con, addr = sock.accept()
         #print('Connected with ', addr)
@@ -69,52 +62,18 @@ def downoadFiles():
         Client.downloadFileFromPeer(fname)
         action = input("Download More files?(y/n) : ")
         if (action != 'y'):
-            print("Peer service is running in background to serve the file")
-            action = input("Press 1 : To stop the peer service.")
-            stop_thread = True if action == "1" else False
             break
 
 if __name__ =="__main__":
     t1 = threading.Thread(target=registerMetadata)
- 
+    
+    t1.daemon = True
     t1.start()
     time.sleep(3)
     print("This Peer is ready to serve file : %s \n" %fileName)
     
-
     downoadFiles()
-
+    print("Peer service is running in background to serve the file")
+    action = input("Press ctrl-c : To stop the peer service.")
 
     t1.join()
-
-    
-
-    
- 
-    
-
-'''
-def getUserInput():
-    data = input("""Press 1 : To download new file from server : \n
-Press 2 : To serve as Peer server for other clients : """)
-
-    return data
-
-data = getUserInput()
-while (data):
-    if int(data) == 1:
-        fname = input("Enter file name to download : ")
-        Client.downloadFileFromPeer(fname)
-    elif (int(data) == 2):
-        print("Serving as peer service...\n")
-        try:
-            serveAsPeer(host, port)
-        except:
-            print("Stopped serving as peer service for file : %s" %fileName)
-    else:
-        print("\n!!Closing the service!!\n")
-        break
-
-    data = getUserInput()
-
-'''

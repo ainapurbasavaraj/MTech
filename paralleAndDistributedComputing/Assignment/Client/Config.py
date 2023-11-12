@@ -1,5 +1,5 @@
 
-SERVER_IP =  "localhost"
+SERVER_IP =  "localhost" #Change it to private ip address of server in lab env
 SERVER_PORT = "8800" 
 
 def getServerIp():
