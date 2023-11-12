@@ -3,7 +3,7 @@ import sys
 import json
 import os
 import shutil
-import serverConfig
+import Config
 
 # total arguments
 n = len(sys.argv)
@@ -22,8 +22,8 @@ def getSocketConnection(ip, port):
     return sock
 
 def getPeerServerDetails(filename):
-    port = serverConfig.getServerPort()
-    host = serverConfig.getServerIp()
+    port = Config.getServerPort()
+    host = Config.getServerIp()
 
     sock = getSocketConnection(host, port)
     SendData = '{"File" : "%s"}' %(filename)
@@ -47,7 +47,6 @@ def downloadFile(peerServerDetails):
     port = serverDetails["Port"]
     filename = serverDetails["FileName"]
 
-    ip = 'localhost'
     sock = getSocketConnection(ip, int(port))
     SendData = '%s' %(filename)
     sock.send(SendData.encode())

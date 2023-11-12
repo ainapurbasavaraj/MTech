@@ -1,10 +1,10 @@
 import socket
 import urllib.request
-import serverConfig
+import Config
 
-external_ip = urllib.request.urlopen('http://ip.42.pl/raw').read().decode('utf8')
+local_ip = Config.get_local_ip()
 
-print("Your public IP address is: ", external_ip)
+print("Your local IP address is: ", local_ip)
 
 def registerPeerMetadata(peerPort, filename):
 
@@ -13,8 +13,8 @@ def registerPeerMetadata(peerPort, filename):
     print ("Socket created successfully.")
 
     # Defining port and host
-    port = serverConfig.getServerPort()
-    host = serverConfig.getServerIp()
+    port = Config.getServerPort()
+    host = Config.getServerIp()
 
     # Connect socket to the host and port
     sock.connect((host, port))
@@ -23,7 +23,7 @@ def registerPeerMetadata(peerPort, filename):
     SendData = '''{"Register" : {
         "Ip" : "%s", 
         "Port" : "%s", 
-        "FileName" : "%s"}}''' %(external_ip, peerPort, filename)
+        "FileName" : "%s"}}''' %(local_ip, peerPort, filename)
     print("Registering peer metadata..")
     print(SendData)
     sock.send(SendData.encode())
