@@ -490,3 +490,16 @@ Oozie : Scheduler for hadoop jobs
    It maintains metadata.
    Check Master is working fine or not
 
+*******************************************************************************************************************
+SQL vs NoSql Database
+Mongo db - practice queries
+Graph database - Neo4j practice queries - November 3 video
+Cloud service for big data - November 5 video (Mostly repetation on cloud IAAS, PAAS, SAAS, Lambda, VPC, s3 object storage, EFS, EBS
+
+Big data computing engines - November 6 video
+Spark
+- Hadoop is slower because of read/write to disks - Suitable for batch processing
+- Spark is inmemory, Works on RDD engine - Resilient Distributed Dataset
+- Do not use spark for large batch processes with high memore requirements
+
+
