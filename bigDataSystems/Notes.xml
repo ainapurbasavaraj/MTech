@@ -502,4 +502,5 @@ Spark
 - Spark is inmemory, Works on RDD engine - Resilient Distributed Dataset
 - Do not use spark for large batch processes with high memore requirements
 
-
+*******************************************************************************************************************
+Machine Learning
