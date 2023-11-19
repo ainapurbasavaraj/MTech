@@ -183,10 +183,51 @@ Modern DCN topologies- Clos topology
 leaf-spine topology - Mesh topology
 Fat tree topology
 
+********************************************************************************************************************
 Each leaf connects to each spine.
 Its entirely based on IP routing layer3 network. So, Its scalable and reduntant.
-Leaf and spine are of the same type.
+Leaf and spine are of the same type. layer 3 network and uses layer 3 routing protocols.
+Adding spines increases the capacity between lear nodes
+Classic 3 stage clos topology
+if m=n=t --- Leaf spine topology
+
+DCN Design aspects
+- Choice of topology
+- Oversubscription of bandwidth
+- Multipath routing - To reduce the cost and server latency
+- overall cost
+
+DCN Technology evolution
+  Access-aggregate-core - Spanning Tree protocol
+  Virtual Chassis Technology - Impmlement N:1 virtualisation
+      Integrates the control planes of multiple devices to form a unified logical device
+      challenges - scalability, reliablity, upgrad challenge, Bandwith waste
+
+  Layer 2 multipathing technology
+    popular in WAN
+    The basic principle of L2MP tech is to introduce mechanisms of routing technologies used on Layer3 networks to layer 2 networks.
+    Adds the addressable identifier to each device similar to IP on layer 2 
+    TRILL - protocol is standardised by IETF
 
 
+TRILL
+- Transparent Interconnection of Lots of Links
+- Is implemented by devices called TRILL switches
+- Trill combines techniques from bridging and routing, and is the application of link state routing to L2 networks
+- TRILL uses MAC in TRILL in MAC encapsulation
+  i.e in addtion to the original etherenet header, a TRILL header that provides an addressing identifier and an outer Ethernet header
+  used to forward a TRILL packet on an Ethernet network are added.
+  outer MAC header - To send to next hop
+  TRILL header  -  To perfrom link state routing(layer3 routing) to avoid loop
+  Inner mac header - Original ethernet header
+
+Disadvantages:
+  - TRILL used VLAN IDs to identify tenants. TRILL network supports only about 4000 tenants.
+  - A solution to the tenatn problem was considered at the beginning of TRILL design. A field was reserved in the TRILL header for tenant
+    identification. Not used reserved field because this protocol not used or evolved further
+  - Increased deployment costs : Because of specialised TRILL switches. Requires upgrad of forwarding chips.
+  
+    
+    
 
 
