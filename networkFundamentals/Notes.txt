@@ -284,4 +284,33 @@ How control plane works in overlay networks.
 - It avoids flooding hence used in large sized DCN networks (for more than 100 VMs)
 
 ********************************************************************************************************************
+Multi DC networking
+
+1. Single VPC can span across multiple Data centres.
+2. VMs within VPC communicate at layer2
+3. There are multiple uscases why we need VPC in Multiple Data centres.
+    - Due to nature of applications it is hosting
+    - Application or use cases served by cluster which spans across multiple DC
+    - Content Delivery networks
+      To provide best user experince CDN provider edge servers to host the contents along with central server
+      CDN server selection strategy:
+      - Based on Geographical proximity to the client via Local DNS mapping (This is static and has disadvantages)
+      - Current traffic conditions 
+      - IP anycast : Technique to find best/shortest path for given IP when multiple cluster having the same IP
+          Routers in the internet route the client's packets to the closes cluster as determined by BGP
+          CDN company assigns the same IP address to each of the clusters
+
+Multi DC networking requirements:
+1. L2 Network across DCs - VMs within VPC communicate at layer2
+2. L3 networking across DCs
+3. Data synchronisation and backup. Storage interconnection
+
+1. L2 Networking across DCs
+option 1: Virtual private LAN service
+option 2: Use of VXLAN preferred
+
+2. L3 networking across DCs (tunneling L3 overlay packet over L3 network)
+option1 : MPLS L3VPN
+option2: VXLAN based L3VPN service - Is the preferred technology
+
 
