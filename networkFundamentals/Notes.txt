@@ -226,8 +226,62 @@ Disadvantages:
   - A solution to the tenatn problem was considered at the beginning of TRILL design. A field was reserved in the TRILL header for tenant
     identification. Not used reserved field because this protocol not used or evolved further
   - Increased deployment costs : Because of specialised TRILL switches. Requires upgrad of forwarding chips.
-  
-    
-    
 
+
+********************************************************************************************************************
+    
+Overlay Network: https://info.support.huawei.com/info-finder/encyclopedia/en/Overlay+network.html
+- A software defined logical network built over an existing underlay network
+- Is completely decoupled from the underlay network
+    - Allows the underlay network to be flexibly expanded
+    - Facilitates SDN architecture deployment
+
+NVO3 network: Network virtualisation over layer3  network
+ - is a tunnel encapsulation technology that encapsulates layer 2/3 packets over tunnels(layer3)
+ - NVO3 includes VXLAN.
+ - VPN is one example of tunneling where it hides user's private IP address and connects to its server with over VPN.
+
+VXLAN:
+- Is the implementaion of NVO3 technology.
+- It encapsulates layer2 packet in to layer3 tunnel.
+- This tunneling is done by VTEPs (Edge switches or virtual switches in case of VM)
+- layer2/3 packet acts as appliation data to VTEP and it doesn't care what it has. It only creates tunnel between VTEP1(at source network)
+  VTEP2(destination network)
+- VTEP1 encapsulates layer2/3 packet coming to it with VXLAN header and send it over layer3 network to VTEP2 and VTEP2 decapsulate it and send the underlying layer2/3 packet to actual destination.
+- The VXLAN encapsulation invovles giving unique identifier to VM at VTEP1 and VM at VTEP2 whcih is called VNI(virtual network identifier)
+- While encapsulating VTEP1 puts this VNI in VXLAN header, Then that is again encapsulate with UDP header(fixed udp port for vxlan), Then
+  that is again encapsulated in outer IP header. Then this is again encapsulated with MAC header as it does in normal TCP/IP protocol.
+
+Why VXLAN is better than VLAN?
+- VLAN supports only 12 bits hence 4096 logical ports.
+- VXLAN on the other end use 24 bits which server 16 billinon connections.
+- VXLAN provides lot of flexibilty because of overlay IP network.
+- Can add software defined Value added service(like firewall) easily
+
+Control plane in DCN underlay network:
+- is similar to control plane in IP network.
+- Protocol used are OSPF for smaller Data center Network and BGP for large networks
+- MGBGP is used by creating autonoums systems inside the data center network.
+
+How control plane works in overlay networks.
+- There are 2 widely used protocols that used in VXLAN to advertise the links.
+  1. Flood and learn multicast based control plane
+  2. VXLAN MPBGP EVPN control plane.
+
+1. Flood and learn multicast based control plane
+- This is done similar to the layer2 brodcasting of mac addresses.
+- Ecah overlay network creates multicast group with all the VTEPs that contains atleast 1 VM which is of that VNI.
+- Instead of Brodacast, It uses multicast on layer 3 network.
+- VM in one VTEP will brodcast request asking for MAC address of given IP address. ARP request
+- VTEPs belongs to same multicast group will get the ARP request.
+- VMs in other VTEP will unicast back saying this IP address belongs to this MAC and also it puts the entry in the routing table.
+
+2. VXLAN MPBGP EVPN control plane.
+- EVPN : Ethernet Virtual private network
+- Creates tunnels between each network(overlay) with underlying network.
+- extension of BGP network
+- Advertises its private IP addresses to other edge with in its overlay network only not to other networks.
+- It avoids flooding hence used in large sized DCN networks (for more than 100 VMs)
+
+********************************************************************************************************************
 
