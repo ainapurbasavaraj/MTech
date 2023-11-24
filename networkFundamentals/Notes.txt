@@ -313,4 +313,223 @@ option 2: Use of VXLAN preferred
 option1 : MPLS L3VPN
 option2: VXLAN based L3VPN service - Is the preferred technology
 
+********************************************************************************************************************
 
+VM, VNF(Virtual Network Functions) and container networking
+
+Virtual switch : Software based switch resides in hypervisor kernel providing local network connectivity between VMs
+
+Open vSwitch(OVS): The OVS is multilayer virtual switch implelemented in software.
+                   It behaves like physical switch, Only virtualised.
+                  It uses virtual network bridges and flow rules to forward packets between hosts.
+                   Supports VXLAN
+                  open source apache licensed
+
+OVS component architecutre:
+Data plane(fast path) runs in kernel mode
+Control plane run in user mode (OVS vswitchd)
+
+OVS Flow forwading: (check November 4 recording)
+1. First packet is not found entry in data plane and hence go to control plane.
+2. Control plane will then connects to SDN to get the routing information
+3. Then it makes the entry in data plane.
+
+Performance challenges with VSwitch:
+- In Non virtualised environments, the data traffic is received by the physical NIC(pNIC) and is sent to an application in the user space
+  via the kernel space.
+- In virtual environment, physical NICS, vNICS, hypervisors and virtual switch in between.
+- The hypervisior and vSwitch take the data from the Physical NIC and then send it to the virtual machine or VNF then to application.
+- The virtaul layer causes virtualisation overhead and additional packet processing that reduces I/O packet throughput
+- VNF(virtual Network Functions) running on VM will face lot of performance bottlenecks
+
+Overcoming OVS bottlenecks:
+- Avoid virtualisation overhead and increase packet througput.
+- PCI passthrough
+- SR-IOV
+- OVS-DPDK
+
+PCI Passthrough - Peripheral Component Interconnect(PCI) gives VNF's direct access to physical PCI devices that seem and behave as if they were physically connected to the VNF.
+- Can be used to map a single pNIC to single VNF making the VNF appear directly connected to the pNIC.
+- Using passthrough provides performance advantages, such as:
+  - One to one mapping between VNF to pNIC
+  - Bypass hypervisor
+  - Direct access to I/O resources.
+  - Increased throughput
+  - reduced cpu utilization
+Drawback:
+Using PCI passthroguh dedicates an entire pNIC to a single VNF. It can not be shared with other VNFs. Therefore it limites number of VNFs to the number of pNICs in the system.
+
+
+SR-IOV: Single Root I/O virtualisation
+- is a PCI passthroguh process feature that enables multiple VNF's to share the same pNIC.It emulates multiple peripheral component interconnect express devices, such as pNICs, on a single PCIe device.
+- Emulated PCIe device is referred to as virtual function(VF) and the physical PCIe device is referred to as Physical function(PF)
+- Physical function has full PCIe features
+- VF have simple PCIe functions that process I/O only.
+- VNFs have direct access to the VFs
+
+OVS-DPDK(Data plane development kit)
+- It opereates in user space
+- OVS is upgraded to DPDK libraries to address performance impack of interruptions on packet thorugput because of interrurps to kernel
+-  DPDK pNIC will not tirgger interrrupt to kernel(like in usual way) when it receive the packet/data.
+- DPDK PMD(Pole Mode Driver) sitting in OVS(user space) will continuosly poll pNIC for the incoming data.
+- By this way it will bypass kernel space
+- DPDK PMD needs one or more cpu cores dedicated to polling and processing incoming data.
+- When packet enters the OVS, It is already in user space. Therefore it can be directly switched to the VNF.
+
+********************************************************************************************************************
+Container Networking
+
+use the concept of cgroups (to manage and control resources used by container)
+and namespaces to isolate one conatainer with another.
+net-namespace is what is used to isolate the networking in containers.
+
+Below drivers exist in docker
+
+- Bridge
+- Host
+- Overlay
+- Ipvlan
+- Macvlan
+- none
+
+container networking has 4 operating modes
+
+No network : When container is no need to communicate with outside world
+
+Host network: Shares the network namespace with the host OS. Cotainer sees everything that host sees with no isolation.
+  - Normally run in privilaged mode
+  - Container can modify host OS network state such as routing table, Mac table
+  - Since container shares the same network state its difficult to have two containers using the same TCP/IP port number to communicate with outside world
+
+Single host network: Is the defult mode provided by docker.
+  - In this mode cotainer can communicate to other container on same node and also to outside world
+  - This is served by BRIDGE networking.
+  - When docker service is instantiated, It creates docker0 device which is linux bridge
+  - Docker creates a veth pair of interfaces, assigns one of them to containers netns and other to docker0 bridge.
+  - Mulitple containers created on host can communicate with each other because one of veth interface in each of these conatiners is connected to docker0 bridge
+
+  - docker uses default subnet of 172.17.0.0/16 to the docker0 bridge
+  - it assigns 172.17.0.1 to docker0 itself and other available ips to new containers.
+  - dockers adds default route in the containers namespace that specifies the next hop as the docker0's ip address
+  - docker by default also configures any packet from bridge destined to the outside world undergo NAT so that multiple containers can share a single host IP address to communicate with entities other than the host.
+
+MACVLAN : is alternative to bridge for single host container communication.
+  - The kernel driver assigns each MacVlan interface unique Mac address
+  - The kernel delivers incoming packet to MacVlan interface whose mac address matches the packets destination MAC addresss and there by correct container.
+  - The containers associated with MacVlan network need to be assigned ip addresses in a subnet associated with the upstream interface
+
+
+Multi host container networking:
+- docker defines network type called overlay for multi host connectivity.
+- This overlay network is VXLAN(MAC-UDP encapsulation)
+- This is L2 network. In other words, the containers spread across the hosts are in the same subnet
+- Cordinating IP addresses across multple host which belongs to same subnet is not easy.
+- Hence docker uses docker swarm to manage these ip address across multiple hosts.
+- communication between conainer in host1 and host2 happens via VXLAN tunnel.
+- Docker sets up two interfaces inside a container in this case.
+- one for the communication between containers within same subnet using the overlay
+- the other one for outside world
+- This new interface is also veth but connects to differen bridge called docker_gwbridge.
+- packets going thru docker_gwbridge undergo NAT by default just as in case of docker0 bridge
+
+********************************************************************************************************************
+
+Cloud network security:
+
+standard firewalls check for sourceip, destination ip and tcp/udp port without furhter deep packet analysis
+
+Next generation firewall : check for packet payload and check contents like credit card numbers of private data etc..
+Conent ID is one example of next gen firewall
+- Check for data like credit card
+- Threats like viruses, spyware
+- URL - checks for malicious URLs like web filtering
+
+IDS/IPS - Intrusion Detection Systems and Prention systems
+
+IDS
+- helps detects shift from normal behaviour (suspected behaviour)
+- It just detection and there is no action
+- Used to just observe the behaviour and notify. Example so and so traffic is going and coming in to the system and notify IT admins.
+
+IPS
+- similar to IDS but it also take action to mitigate malicious traffic
+- IPS sits at the perimeter to avoid malicious requests coming in to the system
+
+IDS/IPS uses  behaviour, anamoly and signature methods to detect and mitigate attacks
+
+Behaviour analysis:
+  -  Analyse behaviour of the network by baselining how network behaves normally
+  -  Any deviation from the baseline bacomes an outlier and triggers IPS/IDS based on behaviour deviation
+
+Anamoly detection:
+- Malware writers often attempt to masquerade their application as a legitimate application.
+- This is method where protocol is correct but there is some manipulation to packet
+- This requires packet analysis
+
+signature based detection:
+- Understand the pattern of attack
+- It works with only recognised and know patterns
+- So it detects the most common and generic attacks
+- It can not detect patterns which is not yet recognised
+- Can yeild false positive
+
+Securing Network services:
+- DNS, email and file transfer are internet services
+
+How DNS works?
+Every DNS may not have all FQDN.
+DNS collaborate with other DNS servers when it doesn't have reuqested full qualified domain name.
+It updates its database by collaboring with other DNS
+
+DNS service security 
+  - If DNS service is down due to DDOS attack then its as good as internet is down
+  - DNS posioning is way of redericting to malicious website when requested for legitimate website
+  -  DNS services authenticate to each other by showing their identity.
+
+email security:
+- spam filtering
+-  installing spam filter security appliance
+
+Network segmentations:
+- creating segments and isolate them
+- create firewalls between segments
+- 
+********************************************************************************************************************
+Network observability
+
+Distributed systems are hard to understand, hard to control and always frustating when things go wrong.
+
+Observabiltiy represent the operator's lastest attempt to respond adequately to the questsions.
+Along with automation, observability has become one of the central pillars of the cloud native data center.
+
+It is defined as the property of a system that provides answers to questions ranging from the mundane to the existential
+more precisely, It is a way for an operator to understand what's going on in a system by examining the outputs provided by the system
+
+How observability is different from monitoring?
+- monitor, alert, support root cause investigation, support diagnosis
+- monitory tells you whether the system works, obervability lets you as why its not working
+
+SNMP - Simple Network Management Protocol
+- To mamage the network by pulling the information from network elements.
+- Issue with this is that it is reducing the performace of Network elements
+
+Understanding importance of observabiltiy
+
+The challenges of network observability
+
+Network observability in DCNs
+- Multipathing : multipaths in the server to server network
+- obscured by tunnels : Due to virtualisation, no popular implementation of the traceroute command can reveal the multiple paths via underlay network
+- containers and microservices: Network observability tools today are siloed between compute and network
+-  Due to short live of containers, makes it harder to perform post mortem analysis
+
+Factors that makes observability easier in DCNs
+- Simpler nodes - frees up network to be build entirely with sing kind of devices in clos topology
+- network disaggregation : switches are built as platforms not as appliances. Not tied up with hardware.
+
+Observability can be decomposed in to
+- Telemetry or gathering data
+- storage
+-  monitoring
+- Altering
+- data analysis
