@@ -3,9 +3,6 @@ Introduction to HIVE
 Hive is a data warehouse infrastructure tool to process structured data in Hadoop. It resides on top of Hadoop to summarize Big Data, and makes querying and analysing easy.
 Initially Hive was developed by Facebook, later the Apache Software Foundation took it up and developed it further as an open source under the name Apache Hive.
 Hive is not designed to be used for OLTP (Online transaction processing) systems rather designed to be used for OLAP (online analytical processing) systems.
-Architecture
-The following components depicts the components of hive
- 1
 
  Working of HIVE
 The following components depict the working of HIVE.
@@ -13,42 +10,24 @@ The following components depict the working of HIVE.
   Apache Hive allows us to organize the table into multiple partitions where we can group the same kind of data together. It is used for distributing the load horizontally.
 When creating a table a key can be used to split data into partitions - implemented as separate sub-dirs with table dir on HDFS.
 Bucketing provides Additional level of sub-division within a partition based on hash of some column to make some queries efficient.
- 2
 
-  HIVE QUERIES
-  It provides SQL type language for querying called HiveQL or HQL. In this section we will discuss various
- clauses/operators used within HIVE queries.
- In order to access hive shell type hive on terminal as follows
-        [centos@master~]hive
+HIVE QUERIES
+
 CREATE A DATABASE
 The create statement is used to create a database. The syntax is as follows
         hive> create database [IF NOT EXISTS] test;
 OR
         hive> create schema [IF NOT EXISTS] test;
-            The above command will create a database with name test. The ‘IF NOT EXISTS’ clause is optional and will
- create a database only if the database with name test does not exists already.
- SHOW DATABASES
- The SHOW databases command is used to list all the databases
-          hive> show databases;
-The above command will list all the databases.
-DROP A DATABASE
-The create statement is used to create a database. The syntax is as follows
-        hive> drop database test
-OR
-The above command will delete the database test. you can list databases using show databases.
-         hive> drop schema test;
-  3
+          
+hive> show databases;
 
-  USE DATABASE
- In order to create a table you need to go to a particular database first. The USE database command is used to
- access a database
-          hive> use test;
+DROP A DATABASE
+drop database test
+use test;
+
 CREATE TABLE
-  The above command will take you to test1 a database. Now you can create or list tables inside the test
- database.
- The create statement is used to create a table within a database. First go to particular database using ‘use
- database’ command and then type the following command to create a table.
-  hive> create table employee (
+ 
+create table employee (
 employee_id INT,
 first_name STRING,
 family_name STRING,
@@ -57,126 +36,47 @@ ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
 STORED AS TEXTFILE;
-  The above command will create a table employee with in test database.
-        hive> show tables;
-The above command will list all the tables with in test database.
-        hive>desc employee;
-The above command will display the table schema.
- SHOW TABLES
- The SHOW TABLES command is used to list all the tables with in a database
-     DESCRIBE
- The DESCRIBE command is used to display the table schema
-    4
-
+ 
   ALTER
- The ALTER clause can be used to rename a table, add columns to a table, modify and replace columns
- Use of alter to rename a table
-  hive> alter table employee rename to emp;
-hive> show tables;
-  Use of alter to add a column
-  hive>alter table emp add columns(address string);
- hive>descemp;
-  Use of alter to replace columns
-  hive>alter table emp replace columns(eidint, fname string, lname string);
-hive>descemp;
-  Use of alter to modify a column name
-  hive>alter table emp change fnameename string; hive>descemp;
- DROP A TABLE
-The drop statement is used to drop a table. The syntax is as follows
+alter table employee rename to emp;
+alter table emp add columns(address string);
+alter table emp replace columns(eidint, fname string, lname string);
+alter table emp change fnameename string; hive>descemp;
+
 LOAD
 The load command is use to load the data from a file into table Loading data into table from a file stored in local file system
-        hive> load data local inpath 'emp.csv' into table emp;
+load data local inpath 'emp.csv' into table emp;
 Loading data into table from a file stored in HDFS
-hive>load data inpath '/hive/input/emp.csv' into table emp;
-   hive> drop table emp;
-hive> show tables;
-          5
+load data inpath '/hive/input/emp.csv' into table emp;
+  
 
  SELECT
-The SELECT command is use to retrieve the data from table Use of SELECT to retrieve all the columns
-        hive> select * from emp;
-Use of SELECT to retrieve few columns
-        hive> select employee_id, first_name from emp;
+select * from emp;
+select employee_id, first_name from emp;
 WHERE
-Use of WHERE
-        hive>select * from emp where employee_id= 10099;
-The above command will display all the columns corresponding to employee_id 10099 as follows
-             The WHERE clause allows to filter the records based on a condition. The records that satisfy the condition are
- displayed as result while that do not satisfy the condition are ignored.
-       6
+select * from emp where employee_id= 10099;
 
-  Use of WHERE
-The above command will display first_name, gender corresponding to employee_id 10099.
-Use of LIMIT
-        hive>select * from emp LIMIT 3
-The above command will display only first 3 records from emp table rather than all the records.
-    LIMIT
-hive> select first_name, gender from emp1 where employee_id= 10099;
-    The LIMIT clause allows to specify a limit on number of records to be displayed as part of result.
-        ORDER BY
- The ORDER by clause is use to sort the output on a particular attribute.
- Use of ORDER BY
-        hive>select * from emp order by first_name limit 3
-The above command will display only first 3 records order by first_name.
-      7
+ORDER BY
+select * from emp order by first_name limit 3
 
-  Use of ORDER BY
 Use of COUNT
-        hive> select count(*) from emp;
-The above query will return the number of records in the emp table;
-  hive>select employee_id, first_name from emp order by employee_iddesc limit 5.
-  The above command will display only first 5 records in the descending order of employee_id.
-   COUNT
- The COUNT clause is used to count the number of column values
-       8
+select count(*) from emp;
+select employee_id, first_name from emp order by employee_id desc limit 5.
 
  MAX
-The MAX clause is used find max value from a column Use of MAX
-        hive> select max(employee_id) from emp;
-The above query will return the max value of employee_id column.
-        MIN
-The MIN clause is used find minimum value from a column Use of MIN
-        hive> select min(employee_id) from emp;
-The above query will return the min value of employee_id column.
-        9
+select max(employee_id) from emp;
+MIN
+select min(employee_id) from emp;
 
-  GROUP BY
- The group by is used to group the columns by particular column. It is generally used with statistical functions
- such as count, min, max ,avgetc.
- Use of GROUP BY
-hive> select gender, count(*) from emp group by gender;
-The above query will return the count of records by gender.
-Use of GROUP BY
-hive>select gender, max(employee_id) from emp group by gender;
-The above query will return the max employee_id from male and female group
-             10
+ GROUP BY
+select gender, count(*) from emp group by gender;
+select gender, max(employee_id) from emp group by gender;
+
 
  JOIN
- 
- The join operation can be used to join two relations. The joining of two relations is possible in case they have
- common attribute. There are two types of join.
- Inner join
- Outer join
- Inner join
- This inner join is used to return the matching rows from 2 relations on a common attribue
- Consider the following input files customers.txt (id, name, age, address, salary) and
- Customers.txt
-orders.txt (oid, date, customer_id, amount)
-   1,Ramesh,32,Ahmedabad,2000.00
-2,Khilan,25,Delhi,1500.00
-3,kaushik,23,Kota,2000.00
-4,Chaitali,25,Mumbai,6500.00
-5,Hardik,27,Bhopal,8500.00
-6,Komal,22,MP,4500.00
-7,Muffy,24,Indore,10000.00
-  Orders.txt
-  102,2009-10-08 00:00:00,3,3000
-100,2009-10-08 00:00:00,3,1500
-101,2009-11-20 00:00:00,2,1560
-103,2008-05-20 00:00:00,4,2060
-104,2008-05-21 00:00:00,9,2200
+
  We can create the customer table as follows
-  hive>create table customers(
+create table customers(
     Id INT,
     name STRING,
     age INT,
@@ -186,11 +86,11 @@ ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
 STORED AS TEXTFILE;
-   11
+
 hive>load data inpath '/hive/input/customers.txt' into table customers;
  
- The above query will read the file from specified location and load the data into customers table create orders table
-  hive>create table orders(
+The above query will read the file from specified location and load the data into customers table create orders table
+hive>create table orders(
 oid INT,
 o_date DATE,
 customer_id INT,
@@ -204,44 +104,27 @@ The result of above join query is shown below
   hive>SELECT c.ID, c.NAME, c.AGE, o.AMOUNT
 FROM CUSTOMERS c JOIN ORDERS o
 ON (c.ID = o.CUSTOMER_ID);
- 12
+
 hive>load data inpath '/hive/input/orders.txt' into table orders;
   
- Outer Join
-outer join returns all the rows (even non matching) from at least one of the relations. An outer join operation is carried out in three ways −
- Left outer join
- Right outer join
- Full outer join
-Left outer join
-We can apply join on customers and orders as follows.
-The result of above join query is shown below
- The left outer Join operation returns all rows from the left table, even if there are no matches in the right
- relation. In non-matching rows the attribute values from other tables are filled in with null values.
-  hive>SELECT c.ID, c.NAME, o.AMOUNT, o.O_DATE FROM CUSTOMERS c
+Outer Join
+hive>SELECT c.ID, c.NAME, o.AMOUNT, o.O_DATE FROM CUSTOMERS c
 LEFT OUTER JOIN ORDERS o
 ON (c.ID = o.CUSTOMER_ID);
-  13
 
- Right outer join
-We can apply join on customers and orders as follows.
-The result of above join query is shown below
- The right outer Join operation returns all rows from the right table, even if there are no matches in the
- left relation. In non-matching rows the attribute values from other tables are filled in with null values.
+Right outer join
+
   hive>SELECT c.ID, c.NAME, o.AMOUNT, o.O_DATE FROM CUSTOMERS c
 RIGHT OUTER JOIN ORDERS o
  ON (c.ID = o.CUSTOMER_ID);
-  Full outer join
-We can apply join on customers and orders as follows.
-The result of above join qury is shown below
- The full outer Join operation returns matching and non-matching rows from both the tables. In case of
- non-matching rows the attributes from other table are filled in with null values.
-  hive>SELECT c.ID, c.NAME, o.AMOUNT, o.O_DATE
+
+Full outer join
+hive>SELECT c.ID, c.NAME, o.AMOUNT, o.O_DATE
 FROM CUSTOMERS c
 FULL OUTER JOIN ORDERS o
 ON (c.ID = o.CUSTOMER_ID);
-  14
 
- Partitioning
+Partitioning
 Hive table partition is a way to split a large table into smaller tables based on one or more partition keys. Use of partition in HIVE
     hive> CREATE TABLE zipcodes(
 RecordNumberint,
@@ -252,24 +135,13 @@ State string
 PARTITIONED BY(Country string)
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ',';
- The above query will create the partitions by country attribute. Further we will load the data from the input file into this partitioned table
-Input file: zipcodes.csv
-   RecordNumber,Zipcode,City,State,Country 1,151203,'FDK','PB','India' 2,151204,'KKP','PB','India' 3,151205,'BTI','PB','India' 4,151206,'JAL','PB','India' 5,151207,'LDH','PB','India' 6,251204,'GGN','RJ','India' 7,251205,'JPR','RJ','India' 8,251206,'BKR','RJ','India' 9,251207,'JOR','RJ','India' 10,251208,'UDP','RJ','India' 11,351203,'AMB','HR','India' 12,351204,'KUK','HR','India' 13,351205,'KAR','HR','India' 14,351205,'PPT','HR','India'
- 15,351207,'SPT','HR','India'
-16,651203,'LA','CA','USA'
-17,651204,'SD','CA','USA'
-18,651205,'SJ','CA','USA'
-19,651205,'SF','CA','USA'
-20,651207,'LB','CA','USA'
-  Load the data file into the table using following command.
-15
 
-    You can use the following command to look at the directory structure
+ You can use the following command to look at the directory structure
   [centos@master~]$hadoop fs -ls
  /user/hive/warehouse/test.db/zipcodes/
   Bucketing
 Hive Bucketing is a way to split the table into a managed number of clusters with or without partitions Use of bucketing in HIVE
-    hive>CREATE TABLE zipcodes(
+ hive>CREATE TABLE zipcodes(
 RecordNumberint,
 Zipcodeint,
 City string,
@@ -280,7 +152,7 @@ ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ',';
  The above query will create 4 buckets by state.
 Load the data file into the table using following command.
- 16
+
 hive>load data inpath '/hive/input/zipcodes.csv' into table zipcodes;
   When you load the data into the partition table, Hive internally splits the records based on the partition key and
  stores each partition data into a sub-directory of tables directory on HDFS.
@@ -307,7 +179,6 @@ FIELDS TERMINATED BY ',';
  The above query will create partitioning based on country then with in each partition it will create 4 buckets based on state.
 You can use the following commands to list the directory structure.
    [centos@master~]$hadoop fs -ls /user/hive/warehouse/test.db/zipcodes/
-   17
 
   Further you can list a partitioned directory as follows.
   [centos@master~]$hadoop fs -ls /user/hive/warehouse/test.db/zipcodes/country=%27India%27
@@ -336,7 +207,7 @@ LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
 Location '/hive/ext_table'; //location where the data will
 //reside
- 18
+
 EXTERNAL
 
   The above command will create an external table zipcodes_ext and the data for the same will be stored in
@@ -350,5 +221,4 @@ Outputs/Results
 Observations
 Students should carefully observe the syntax of HIVE queries and verify the output
   hive>load data inpath '/hive/input/zipcodes.csv' into table zipcodes_ext;
-     19
  
