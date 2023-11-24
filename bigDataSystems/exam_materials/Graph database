@@ -1,0 +1,104 @@
+Neo4J
+Neo4j is the pre-eminent graph database engine, offering native graph data storage and processing. It is
+highly scalable, schema free (NoSQL) and supports ACID rules.
+
+Cypher
+Neo4j provides a powerful declarative language known as Cypher. Cypher is human-friendly query language that uses ASCII-Art to represent visual graph patterns for finding or updating data in Neo4j.
+
+CREATE NODE : CREATE(n) return(n)
+
+CREATE MULTIPLE NODES : CREATE (n), (m)
+RETURN THE GRAPH :Match(n) Return(n)
+CREATE NODE WITH LABEL : CREATE(n:Person)
+
+create a node with a label and properties : 
+CREATE (n:Person{name:'Andy', title:'Developer'})
+
+CREATE RELATIONSHIP:  CREATE (node1:label1)-[:RelationshipType]->(node2:label2)
+CREATE (a:person{name:’A’})-[:friendof]->(b:person{name:’B’})
+
+If we need to create a relationship between existing node than first we need to find the nodes using MATCH clause and create a relationship using CREATE clause.
+MATCH(a:label),(b:label) Where a.property = value AND b.property = value CREATE RELTYPE (a)-[r:RELTYPE]->(b)
+
+MATCH(a:person),(b:person) Where a.name = 'A' AND b.name = 'B' CREATE (a)-[r:follows]->(b)
+
+Create a relationship with given label and properties
+CREATE (node1)-[label:relationshipType {properties}]->(node)
+EXAMPLE : CREATE
+(a:person{name:’A’})-[label:friendof{since:2021}]->
+(b:person{name:’B’})
+
+MATCH : 
+Get all nodes with a label
+Match(n:label) Return(n)
+EX : Match(n:Movie) Return(n)
+
+RETURN MOVIE TITLE : Match(n:Movie) Return(n.title)
+
+Return all movies directed by ‘Ron Howard’
+MATCH (node:label)<-[:Relationship]-(n) Return(n)
+MATCH (P:Person {name:'Ron Howard'})-[r:DIRECTED]->(m:Movie) Return(m.title)
+
+MATCH WITH LABELS:
+Return any nodes connected with person 'Tom Hanks' that are labeled Movie.
+MATCH (:Person {name: 'Tom Hanks'})--(movie:Movie) Return(movie.title)
+
+Directional relationships
+Returns any nodes connected with the Person 'Tom Hanks' by an outgoing relationship
+MATCH (:Person {name: 'Tom Hanks'})-->(movie:Movie) Return(movie.title)
+
+Match on relationship type
+Returns all actor names who acted in movie ‘Apollo13’
+MATCH(m:Movie {title: 'The Matrix'})<-[:ACTED_IN]-(actor:Person) RETURN(actor.name)
+
+Match on multiple relationship types
+Return nodes with an ACTED_IN or DIRECTED relationship to 'The Matrix'
+MATCH(m:Movie{title: 'The Matrix'})<-[:ACTED_IN|DIRECTED]-(p:Person) RETURN(p.name)
+
+Match on relationship type and use a variable
+Retunr ACTED_IN roles for 'The Matrix'
+
+Multiple relationships
+Returns the movies 'Tom Hanks' acted in and its director.
+MATCH   (p:Person (name: 'Tom Hanks'})-[:ACTED_IN]->(m:Movie)<- [:DIRECTED]-(director:Person)
+RETURN m.title, director.name
+
+REMOVE :
+remove age property of a node
+MATCH (a:{name:’Andy’}) REMOVE a.age
+RETURN a.name,a.age
+
+REMOVE LABEL : remove label German from node name as ‘Andy’
+MATCH (n:German{name:’Andy’}) REMOVE n:German
+RETURN n.name,labels(n)
+
+remove label German and Swedish from node name as peter
+MATCH (n:french:{name:’Andy’}) REMOVE n:German:Swedish RETURN n.name,labels(n)
+
+DELETE :
+Delete a node with name Andy
+MATCH (n:Person    {name: 'Andy'})
+DELETE n
+
+DELTE ALL NODES :
+MATCH (n)
+DETACH DELETE n
+
+Delete a node with all its relationships:
+MATCH (n:person{name: 'A'}) DETACH DELETE n
+
+Delete relationshiops only:
+MATCH (n:person{name: 'A'})-[r:friendof]->() DELETE r
+
+SET can be used to update a property on a node or relationship.
+MATCH (n:person {name: 'Andy'}) SET n.age = toString(n.age)
+RETURN n.name, n.age
+
+Add a property using SET:
+MATCH (n:person{name: 'Andy'}) SET n.surname = 'Taylor'
+RETURN n.name, n.surname
+
+REMORE PROPERTY USING SET:
+MATCH (n {name: 'Andy'}) SET n.name = null
+RETURN n.name, n.age
+
