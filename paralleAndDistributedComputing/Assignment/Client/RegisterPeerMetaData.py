@@ -1,24 +1,25 @@
-import socket
+'''
+This is the helper function to
+1. Connect to server and register its peer metadata to server.
+2. Deregister peer metadata to server when peer service is going down.
+'''
+
 import urllib.request
 import Config
+from Communication import SocketCommunication as mySocket
 
-local_ip = Config.get_local_ip()
+local_ip = Config.getLocalIp()
 
 print("Your local IP address is: ", local_ip)
 
-def registerPeerMetadata(peerPort, filename):
+def registerPeer(peerPort, filename):
 
     # Initialize Socket Instance
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print ("Socket created successfully.")
+    sock = mySocket()
 
     # Defining port and host
     port = Config.getServerPort()
     host = Config.getServerIp()
-
-    # Connect socket to the host and port
-    sock.connect((host, port))
-    print('Connection Established.')
 
     SendData = '''{"Register" : {
         "Ip" : "%s", 
@@ -26,13 +27,34 @@ def registerPeerMetadata(peerPort, filename):
         "FileName" : "%s"}}''' %(local_ip, peerPort, filename)
     print("Registering peer metadata..")
     print(SendData)
-    sock.send(SendData.encode())
-
-    # Keep receiving data from the server
-    line = sock.recv(1024)
-    data = line.decode()
+    
+    data = sock.communicate(host, port, SendData)
     if data == "OK":
         print("Metadata registration successful!!")
-        
-    sock.close()
-    #print('Connection Closed.')
+    else:
+        print("This file is already served by other peers")
+        return -1
+    
+    return 0
+
+def deRegisterPeer(peerPort, filename):
+
+    # Initialize Socket Instance
+    sock = mySocket()
+
+    # Defining port and host
+    port = Config.getServerPort()
+    host = Config.getServerIp()
+
+    SendData = '''{"Deregister" : {
+        "Ip" : "%s", 
+        "Port" : "%s", 
+        "FileName" : "%s"}}''' %(local_ip, peerPort, filename)
+
+    print("Deregistering peer metadata..")
+    print(SendData)
+    
+    data = sock.communicate(host, port, SendData)
+    if data == "OK":
+        print("Metadata deregistration successful!!")
+ 

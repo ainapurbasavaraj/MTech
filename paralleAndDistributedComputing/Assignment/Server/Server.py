@@ -1,7 +1,6 @@
 import socket
 import json
 import RegisterService as regService
-import ClientMetadata as CMetaData
  
 #Initialize register service
 rService = regService.RegisterService()
@@ -33,9 +32,11 @@ while True:
     #If request is to register peer metadata
     if jdata.get('Register', None):
         registerData = jdata['Register']
-        cData = CMetaData.ClientMetadata(registerData["Ip"], registerData["Port"], registerData["FileName"])
-        rService.RegisterClientInfo(registerData["FileName"],cData)
-        con.send("OK".encode())
+        ret = rService.RegisterClientInfo(registerData)
+        if ret != 0:
+            con.send("Failure in registering file".encode())
+        else:
+            con.send("OK".encode())
     #If request is to get peer metadata
     elif jdata.get('File', None):
         metadata = rService.GetClientData(jdata['File'])
@@ -46,6 +47,11 @@ while True:
             print("This file is not served by any peer")
             data = "None".encode()
         con.send(data)
+
+    elif jdata.get('Deregister', None):
+        deRegisterData = jdata['Deregister']
+        rService.DeregisterClientInfo(deRegisterData["FileName"])
+        con.send("OK".encode())
     
     print('Send data to client success!')
 

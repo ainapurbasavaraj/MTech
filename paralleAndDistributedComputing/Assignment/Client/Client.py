@@ -1,49 +1,37 @@
-import socket
+'''
+This is client service responsible for
+1.  Create connection to server and get the peer metadata serving the requested file.
+2.  Decode the peer metadata and connect to Peer service to download the requested file.
+'''
+
 import sys
 import json
 import os
 import shutil
 import Config
+from Communication import SocketCommunication as mySocket
 
 # total arguments
 n = len(sys.argv)
-filename = sys.argv[1]
-
-def getSocketConnection(ip, port):
-    # Initialize Socket Instance
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #print ("Socket created successfully.")
-
-    # Connect socket to the host and port
-    #print("Connect to %s : %s" %(ip, port))
-    sock.connect((ip, port))
-    #print('Connection Established.')
-
-    return sock
+filename = sys.argv[1] if n > 1 else None
+if not filename:
+    print("File name is not passed as command line argument")
+    exit(0)
 
 def getPeerServerDetails(filename):
     port = Config.getServerPort()
     host = Config.getServerIp()
-
-    sock = getSocketConnection(host, port)
     SendData = '{"File" : "%s"}' %(filename)
-    sock.send(SendData.encode())
 
-    line = sock.recv(1024)
-    peerServerDetails = line.decode()
-
-    closeConnection(sock)
+    mySock = mySocket()
+    peerServerDetails = mySock.communicate(host, port, SendData)
     return peerServerDetails
-
-
-def closeConnection(sock):
-    sock.close()
 
 
 def downloadFile(peerServerDetails):
     print("Peer server details : %s " %peerServerDetails)
     if peerServerDetails == "None":
-        print("Input file is not served by any peer!")
+        print("Input file is not served by any peer currently!")
         return
 
     serverDetails = json.loads(peerServerDetails)
@@ -51,11 +39,12 @@ def downloadFile(peerServerDetails):
     port = serverDetails["Port"]
     filename = serverDetails["FileName"]
 
-    sock = getSocketConnection(ip, int(port))
+    mySock = mySocket()
+    mySock.connect(ip, int(port))
     SendData = '%s' %(filename)
-    sock.send(SendData.encode())
+    mySock.send(SendData)
 
-    line = sock.recv(1024)
+    line = mySock.receive()
 
     if not os.path.exists("downloaded-data"):
         os.mkdir("downloaded-data")
@@ -63,14 +52,18 @@ def downloadFile(peerServerDetails):
     file = open(fname, 'wb')
     
     while(line):
-        file.write(line)
-        line = sock.recv(1024)
+        file.write(line.encode())
+        line = mySock.receive()
 
-    print('File %s has been received successfully.\n\n' %fname)
+    print('File %s downloaded to %s.\n\n' %(filename,fname))
 
     file.close()
-    closeConnection(sock)
+    mySock.closeConnection()
 
 
 def downloadFileFromPeer(fileName=None):
     downloadFile(getPeerServerDetails(fileName))
+
+
+if __name__ =="__main__":
+    downloadFileFromPeer(filename)

@@ -1,4 +1,7 @@
 class ClientMetadata:
+    '''
+    This class is a structure to holds the client metadata 
+    '''
     def __init__(self, ip, port, file):
         self.ip = ip
         self.port = port

@@ -1,3 +1,7 @@
+'''
+This is the config file to configure server ip address and port that client service has to connect to.
+
+'''
 
 SERVER_IP =  "localhost" #Change it to private ip address of server in lab env
 SERVER_PORT = "8800" 
@@ -10,7 +14,7 @@ def getServerPort():
 
 import socket
   
-def get_local_ip():
+def getLocalIp():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         # doesn't even have to be reachable
