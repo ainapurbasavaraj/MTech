@@ -504,3 +504,54 @@ Spark
 
 *******************************************************************************************************************
 Machine Learning
+
+K means clustering:
+
+Euclidean Distance Formula
+
+d = squarerootOf (x2 - x1)^2 + (y2 - y1)^2
+x2 - observed value
+x1 - centroid value
+
+y2 - observed value
+y1 - centroid value
+
+Dataset
+Candidate	Weight	Glucose level
+1             	72 	185 
+2             	56 	170 
+3 	            60 	168 
+4 	            68 	179 
+5 	            72 	182 
+6 	            77 	188 
+7             	70 	180 
+8 	            84 	183 
+
+calculating K means where k = 2
+
+Initial centroid value k1 = C1 - (72, 185)
+Initial centroid value k2 = C2 - (56, 170)
+
+Applying formula:
+calculating centroid value for C3
+
+w.r.t K1
+C3 = squarerootof ((60-72)^2 + (168 - 185)^2)
+   = squarerootof (144 + 289)
+   = 20.80
+
+w.r.t K2
+C3 = squarerootof (60-56)^2 + (168-170)^2
+   = squrerootof ( 16 + 4)
+   = 4.4721
+
+4.47 is lesser, So C3 will go into k2 cluster.
+
+Now, K1 - (C1)  K2 - (C2, C3)
+Update the value of K2 since it has new candidate.
+
+New K2 will be - (C2+c3)/2 = (56 + 60)/2 and (168 + 170)/2 = 55, 169
+
+so, K1 - (72, 185)  K2 - (55, 169)
+
+Further calulation like C4 will be based on above values.
