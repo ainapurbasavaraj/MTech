@@ -502,6 +502,25 @@ Spark
 - Spark is inmemory, Works on RDD engine - Resilient Distributed Dataset
 - Do not use spark for large batch processes with high memore requirements
 
+map() – Spark map() transformation applies a function to each row in a DataFrame/Dataset and returns the new transformed Dataset.
+flatMap() – Spark flatMap() transformation flattens the DataFrame/Dataset after applying the function on every element and returns a new transformed Dataset. The returned Dataset will return more rows than the current DataFrame. It is also referred to as a one-to-many transformation function. This is one of the major differences between flatMap() and map()
+Key points
+
+Both map() & flatMap() returns Dataset (DataFrame=Dataset[Row]).
+Both these transformations are narrow meaning they do not result in Spark Data Shuffle.
+flatMap() results in redundant data on some columns.
+One of the use cases of flatMap() is to flatten column which contains arrays, list, or any nested collection(one cell with one value).
+map() always return the same size/records as in input DataFrame whereas flatMap() returns many records for each record (one-many).
+
+Example1:- 
+sc.parallelize([3,4,5]).map(lambda x: range(1,x)).collect()
+Output:
+[[1, 2], [1, 2, 3], [1, 2, 3, 4]]
+
+sc.parallelize([3,4,5]).flatMap(lambda x: range(1,x)).collect()
+Output:  notice o/p is flattened out in a single list
+[1, 2, 1, 2, 3, 1, 2, 3, 4] 
+
 *******************************************************************************************************************
 Machine Learning
 
