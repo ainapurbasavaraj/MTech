@@ -494,13 +494,240 @@ Oozie : Scheduler for hadoop jobs
 SQL vs NoSql Database
 Mongo db - practice queries
 Graph database - Neo4j practice queries - November 3 video
+
 Cloud service for big data - November 5 video (Mostly repetation on cloud IAAS, PAAS, SAAS, Lambda, VPC, s3 object storage, EFS, EBS
 
+5 essential characters of cloud computing:
+On demand self- service
+Broad network access
+Resource pooling, Rapid elasticity, Measured service
+
+4 Deployment models
+Public, private, hybrid, community
+
+3 cloud service models : SAAS, PAAS, IAAS
+
+Cloud Services for Big Data
+Cloud follows same model as Big Data, both requiring distributed clusters of computing devices.
+✓ Cloud Computing considered as ideal platform for handling big data IaaS:
+✓ Can provide huge storage and computational power requirements for Big Data through limitless storage and computing ability of cloud computing, e.g. AWS S3, EC2
+PaaS:
+✓ Vendors offers platforms ready with Hadoop and MapReduce (AWS EMR).
+✓ Saves hassles of installations and managements of these environments SaaS:
+✓ Great help to organizations which requires specialized software's for big data like for social media analytics, feedback monitoring etc.
+✓ SaaS vendors provides out of the box solution for such common use cases
+
+
+AWS architecture:
+• Region: DCs are located in specific regions
+• Availability zone: A region is split into AZs to isolate failures. AZs within region are connected with low-latency network.
+• Compute instance: A machine, VM, container or function (FaaS). With DNS support, Elastic static IPs. Can be started from images.
+• Attached volume: A compute instance is connected to block storage volumes for local FS.
+• External storage: To serve as large remote raw data storage. E.g. An object storage like S3
+• Security groups: Rules created to control access to the compute and storage instances.
+• Load balancing: Service to spray load across multiple compute instances across or within AZ.
+• Elastic scaling: Manual or automatically creation / deletion of compute instances.
+• Backup/recovery: Snapshots can be taken to preserve state.
+
+Automated elasticity
+Applications can be provisioned with resources on-demand when they need it
+Re-think application design
+– Understand which application components can be elastic
+– What is the impact on overall application being elastic
+
+Design for failure (e.g. in AWS)
+• Use Elastic IP, a static IP that can be mapped to different servers
+• Use multiple AZ (logical DCs) during deployment - create replicas across AZ
+• Maintain images (Amazon Machine Images) for replication / cloning, quick restoration
+• Usemonitoringservices,e.g.AWSCloudWatch
+• CreateAutoScalinggroupstoreplacefailedinstancesquickly
+• Takesnapshotsandbackuponexternalstorage,e.g.S3
+
+Decoupling application components
+• Have application components interact using queues
+• Stateless components as much as possible
+• Store any session state in DB
+
+Automation of infrastructure
+• Key to auto-scaling .. create auto-scaling groups for different clusters
+• Monitor for resources (CPU, mem, I/O) and take actions like using machine
+images to launch new instances or sending notifications
+• Store config data used for automation in a DB
+• Build process : latest binaries go on a global external storage (e.g. AWS S3) - so any instance can spin up using latest build
+• Open source config management tools: Chef, Puppet, Ansible etc.
+• Build machine images with minimum OS for quick deployment. Configs and and
+user details can be passed on and after launch.
+• Bootup from 1 or more attached block storage volumes, e.g. EBS volumes attached to EC2 instance
+• App components should not depend on location, hardware, IP addresses because the image/binary can be moved anywhere on failure
+
+Security
+• Traditional Enterprise perimeter security doesn‟t work on Cloud
+• Security needed at every layer of application architecture
+• Protect data in motion
+– Use SSL certificates and encryption in data movement – VPC to isolate within public cloud
+– Secure VPN for connecting on-prem to Cloud instances
+• Protect data at rest
+– Can encrypt files or entire volumes
+– Key management is critical: Make sure keys are secure and not lost
+– Snapshot volumes for recovery, e.g. if compromised at some point of time
+• Use the Identity and Access Management service (IAM) given by the Cloud provider
+• Use instance specific virtual firewalls (e.g. AWS security groups) for compute instances, load balancers, DB etc.
+• Use Network ACLs for subnet level access control
+• Use Web App Firewall (WAF) along with application level load
+balancers to block application specific attacks
+
+*******************************************************************************************************************
+STORAGE:
+
+Object storage – S3
+• File storage
+– Elastic File System (EFS)
+• Block storage
+– Elastic Block Storage (EBS)
+
+S3 - Object storage
+S3 is an object storage
+– which means it stores objects which are files with lot of meta-data associated
+A bucket is the container for objects
+An S3 account can have hundreds of buckets and a bucket can have hundreds of objects A bucket can also have folders to organise objects
+An object
+– can be 1 byte to 5TB
+– is uniquely identified by a developer assigned key and a URL
+– has an ACL to control who can access from anywhere - not necessarily from within AWS
+– supports versioning and “eventual consistency” across multiple reads / writes – is partitioned and replicated
+
+Consistency model
+S3 - Follows AP design wrt CAP Theorem
+So when a user uploads an object, it is replicated but readers can access inconsistent replicas and all replicas are “eventually consistent”
+Option for reduced redundancy for lower cost - so writes / updates may not be durable and may need to be repeated .
+Some observations:
+– User uploads object but a reader can get “key does not exist” – An object may not appear in a listing of a bucket immediately – Old data may be returned if a write is not propagated by then – A deleted object may be seen in a listing for some time
+
+Object Lambda
+Remember Function-as-a-Service ? What if you could move the function closer to Data ?
+- create aws lamda function
+- create and configure s3 object lambda access point
+- invoke lamda function on the S3 GET request
+- Process and transform S3 objects
+- Data is returned to the application
+
+Use cases
+• Backup and restore for Cloud as well as on-prem data
+• Disaster recovery with cross region replication
+• Data archival
+• Cloud based applications with scalable storage access from anywhere
+• Create data lakes for big data analytics
+
+Overview-File Storage
+• File system built using SSD storage that can be accessed from multiple Cloud instances or even customer premises servers
+– Supports NFS protocol
+• Applications can simply attach the file system within VPC - so not
+much change to get elastic scalability and IOPS – 10GB/sec, 500K IOPS
+– Multiple NFS clients can attach EFS
+• Multiple storage classes
+
+EFS Storage classes
+Standard - with replication to 3+ AZs
+– EFS Standard and EFS Standard - Infrequent Access
+One Zone - replication only within one AZ at lower cost
+– EFS One Zone and EFS One Zone - Infrequent Access
+– 80% files typically in this category
+Setup lifecycle policies to move data based on age to Infrequent Access (IA) class
+
+Standard storage class
+• AVPC has3AZs
+• Each AZ has a mount target
+• Typically should access EFS from a mount target within same AZ for performance and cost
+• Can create a mount target in one of the subnets within an AZ
+
+One Zone storage class
+• Single mount target in 1 AZ
+• So instance in another AZ has
+to pay for data access cost
+
+Overview
+• Block storage for an EC2 instance that can be attached and detached anytime
+• Provides a volume as a collection of network attached blocks that are exposed as disks
+• Depending on performance / cost one can opt for HDD-backed or SSD-backed volumes
+• EBS volumes are durable and replicated within AZ
+• Can‟t move a volume to another AZ without snapshot
+
+EBS or EFS
+EBS
+– Can be only accessed by one instance at a time
+– Steady predictable performance for a single instance use case
+– upto: 4GBps, 64TB, 260K IOPS, sub-millisec latency per volume
+– I/O intensive applications, e.g. relational databases, OLAP engines
+– Multiple performance / cost options
+– Cheaper than EFS per volume but only for one instance - so effectively more expensive
+EFS
+– Like a distributed multi-user network file system
+– Scalable access across many users with decent performance
+– Costs more per GB but is shared by multiple instances - so turns out cheaper for cost sensitive shared storage applications
+
+*******************************************************************************************************************
 Big data computing engines - November 6 video
 Spark
-- Hadoop is slower because of read/write to disks - Suitable for batch processing
+- Hadoop is slower because of read/write to disks, replications - Suitable for batch processing
 - Spark is inmemory, Works on RDD engine - Resilient Distributed Dataset
 - Do not use spark for large batch processes with high memore requirements
+
+SPARK - RDD
+- spark stores intermediate results in distributed memory without complicating user programming.
+- Spill overs can be transperently stored on disk
+
+What is RDD?
+- Fundamental data structure in SPARK
+- Immutable distributed collection of objects
+- Can be created from other RDDs or parrallelist an exisiting collection in dirver program
+
+Why it is called RDD?
+Resilient
+– A lineage graph of operations helps to reconstruct when a node fails and part of an RDD is lost
+Distributed
+–Each RDD is divided into logical partitions for parallel computation on cluster
+Dataset
+–Can contain any type of objects depending on language used
+
+RDD useful when
+– dealing with unstructured data – don’t want to impose schema – low level operations on data
+– not interested in optimisations done for structured data
+
+RDD features:
+Keep data in memory as much as possible
+• Evaluate only when an action triggers
+• A failed lost RDD partition on a worker can be recovered from lineage of operations
+• Cannot change once created
+• Persist in memory or storage for
+reuse
+• Parallelism through partitioning
+• Put tasks closer to data location
+• Apply operations to entire set of data at coarse grain and not one data item within RDD
+
+RDD limitations:
+For structured data
+–RDDs do not exploit any optimizers –Better to use DataFrame or DataSets
+Since RDDs are in-memory JVM objects there are garbage collection and Java serialisation overheads
+Spill over data is put on disks which slows down performance, hence machines need to have enough memory given the data size and analysis
+
+RDD and DSM:
+Grain of R/W operation
+–RDD is coarse grained as it works at dataset level whereas DSM is at specific data item level
+Consistency
+–Immutable RDDs are trivially consistent whereas DSM makes sure of consistency if programmer follows a set of rules
+Fault recovery
+–New RDDs are created on each transformation. So following lineage of operations RDDs can be recovered. DSMs need checkpointing / rollback.
+Straggler mitigation: Problem of having slow tasks slow down end to end performance –RDDs make it little easier with backup tasks whereas in DSM it is difficult
+Out-of-memory behaviour
+–Spill over data goes to on-disk RDDs gradually degrading performance whereas in DSM system swaps may lead to instability
+
+When not to use Spark ?
+Large batch processes with high memory requirements
+Multi user analysis environments where concurrent demand for memory is high
+–May not scale with number of concurrent users
+
+*******************************************************************************************************************
+Difference between map() and flatmap()
 
 map() – Spark map() transformation applies a function to each row in a DataFrame/Dataset and returns the new transformed Dataset.
 flatMap() – Spark flatMap() transformation flattens the DataFrame/Dataset after applying the function on every element and returns a new transformed Dataset. The returned Dataset will return more rows than the current DataFrame. It is also referred to as a one-to-many transformation function. This is one of the major differences between flatMap() and map()
