@@ -193,6 +193,14 @@ MTTF availability
 Availability = Time system is UP and accessible/Total time observer
 Availablity = MTTF/(MTTD* + MTTR + MTTF) - Unless specified MTTD is zero.
             = MTTF/MTBF
+
+Calculate availabiltiy of individual components
+If all components are connected in series - Then availability is product of individual components
+If all components are connected in parallel - Then find out non-availability of system and substract it from 1 which will give you availability
+
+Availability in parallel:
+A = 1- ((1-A1) * (1-A2))
+
 System is highly available when
 MTTF is high
 MTTR is low
