@@ -20,7 +20,6 @@ def index():
 
 @app.route('/file/<string:path>')
 def get_file_from_server(path):
-    #fileServer = FileServer()
     return fileServer.get_file_from_server(path, request.base_url)
 
 
@@ -32,7 +31,6 @@ def rpc():
 @method
 def addfile(filename, data) ->Result:
     print(filename)
-    #fileServer = FileServer()
     fileServer.add_file_to_server(filename, data)
     return Success("OK")
 
