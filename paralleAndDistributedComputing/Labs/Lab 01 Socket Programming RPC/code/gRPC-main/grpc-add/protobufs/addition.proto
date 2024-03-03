@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message AdditionRequest{
+    int32 a = 1;
+    int32 b = 2;
+}
+
+message AdditionResponse{
+    int32 result = 1;
+}
+
+service Addition{
+    rpc Addn(AdditionRequest) returns (AdditionResponse);
+}

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+message SortRequest{
+    bytes numbers = 1;
+}
+
+message SortResponse{
+    bytes numbers = 1;
+}
+
+service SortService{
+    rpc Sort(SortRequest) returns (SortResponse);
+}
