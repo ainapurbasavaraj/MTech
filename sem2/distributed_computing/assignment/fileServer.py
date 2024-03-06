@@ -1,6 +1,9 @@
 
 import os
 import requests
+import platform
+import json
+import common
 
 class FileServer:
 
@@ -22,7 +25,10 @@ class FileServer:
     
     def register_peer_servers(self):
         with open(self.ipConfigPath,'r') as f:
-            self.otherServerIpList.extend(f.read().splitlines())
+            cur_node = platform.node()
+            data = f.read()
+            data = json.loads(data)
+            self.otherServerIpList.extend(data[cur_node])
 
 
     def add_file_to_server(self, filename, data):
@@ -36,29 +42,40 @@ class FileServer:
             f.write(filename)
 
     
-    def get_file_from_server(self, file, base_url):
-        absFilePath = os.path.join(self.storagePath,file)
+    def get_file_from_server(self, file_name, headers):
+        absFilePath = os.path.join(self.storagePath,file_name)
         if os.path.exists(absFilePath):
             with open(absFilePath, 'r') as f:
                 return f.read()
         else:
             #contact other servers
-            return self.get_data_from_other_servers(file, base_url)
+            return self.get_data_from_other_servers(file_name, headers)
 
-    def get_data_from_other_servers(self, file, base_url):
+    def get_data_from_other_servers(self, file_name, headers):
         
         for host in self.otherServerIpList:
-            url = 'http://%s/file/%s' %(host, file)
-            print(url)
-            print(base_url)
-            if url == base_url:
-                print("Already visited this url {}".format(url))
-                continue
+            url = 'http://%s/file/%s' %(common.get_ip_by_hostname(host), file_name)
+            if isinstance(headers,str):
+                headers = json.loads(headers)
+                visited_hosts = headers.get('Visited', "")
+            else:
+                visited_hosts = headers.get('Visited', "") 
 
-            result = requests.get(url)
-            if result.text:
+            if host in visited_hosts.split(','):
+                print("Already visited this host {}".format(host))
+                continue
+            try:
+                visited_hosts = "%s,%s"%(visited_hosts,host)
+                headers = '{"Visited": "%s"}'%(visited_hosts)
+                headers = json.loads(headers)
+                print("Visiting nearest server %s from %s" %(host,common.getHostname()))
+                result = requests.get(url=url, headers=headers)
+            except Exception as e:
+                print("Failed to connect to server %s with exception %s" %(url,e))
+            else:
+                if result.text != "KO":
+                    common.downloadFile(self.storagePath,file_name,result.text)
                 return result.text
         
         return "KO"
-        
         
