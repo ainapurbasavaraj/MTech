@@ -1,0 +1,43 @@
+Show dbs
+Use db
+Show collections	
+					
+db.createCollection("mycollection")
+
+INSERT:	 	 	 					
+db.books.insert([
+ {"id":1, "title":"Cloud computing", "tags":["cloud", "prog"], "reviews":5},
+ {"id":2, "title":"IDS", "tags":["DataScience"], "reviews":3}, {"id":3, "title":"Data Analytics", "reviews":5},
+ {"id":4, "title":"Big Data Systems", "reviews":5},
+ {"id":5, "title":"Big Data", "reviews":3}
+ ]) 	
+		
+FIND: db.collection_name.find() 
+
+Display key id from collection : 
+db.books.find({}, {"id":1})
+
+LIMIT: db.books.find().limit(3)
+SORT : db.books.find().sort({"reviews":1})
+LESS THAN : db. books.find({"reviews":{$lt:4}}).pretty()
+NOT EQUAL : db. books.find({"reviews":{$ne:5}}).pretty()
+AND : db.books.find({$and: [{"title":"IDS"}, {"reviews":3}]})
+OR : db.books.find({$or: [{"title":"IDS"}, {"reviews":5}]})
+REMOVE DOCUMENT : db.books.remove({"id":5})
+REMOVE 1st OCCURANCE : db.books.remove({"reviews":5}, {"justOne":true})
+
+PYTHON
+username = urllib.parse.quote_plus('bainapur')
+password = urllib.parse.quote_plus('Amadeus@125')
+uri = 'mongodb+srv://%s:%s@basavaraj-cluster.8gchilj.mongodb.net/?retryWrites=true&w=majority' %(username,password)
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client["my_store-db"]
+collection = db.my_store
+
+new_store = [{
+        "name" : request_data["name"]
+    }]
+collection.insert_many(new_store)
+collection.find_one({"name": "my_store"})
+updated_list = [x for x in collection.find({})]

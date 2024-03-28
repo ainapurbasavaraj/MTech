@@ -1,0 +1,224 @@
+
+Introduction to HIVE
+Hive is a data warehouse infrastructure tool to process structured data in Hadoop. It resides on top of Hadoop to summarize Big Data, and makes querying and analysing easy.
+Initially Hive was developed by Facebook, later the Apache Software Foundation took it up and developed it further as an open source under the name Apache Hive.
+Hive is not designed to be used for OLTP (Online transaction processing) systems rather designed to be used for OLAP (online analytical processing) systems.
+
+ Working of HIVE
+The following components depict the working of HIVE.
+ Partitioning and Bucketing in HIVE
+  Apache Hive allows us to organize the table into multiple partitions where we can group the same kind of data together. It is used for distributing the load horizontally.
+When creating a table a key can be used to split data into partitions - implemented as separate sub-dirs with table dir on HDFS.
+Bucketing provides Additional level of sub-division within a partition based on hash of some column to make some queries efficient.
+
+HIVE QUERIES
+
+CREATE A DATABASE
+The create statement is used to create a database. The syntax is as follows
+        hive> create database [IF NOT EXISTS] test;
+OR
+        hive> create schema [IF NOT EXISTS] test;
+          
+hive> show databases;
+
+DROP A DATABASE
+drop database test
+use test;
+
+CREATE TABLE
+ 
+create table employee (
+employee_id INT,
+first_name STRING,
+family_name STRING,
+    gender STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE;
+ 
+  ALTER
+alter table employee rename to emp;
+alter table emp add columns(address string);
+alter table emp replace columns(eidint, fname string, lname string);
+alter table emp change fnameename string; hive>descemp;
+
+LOAD
+The load command is use to load the data from a file into table Loading data into table from a file stored in local file system
+load data local inpath 'emp.csv' into table emp;
+Loading data into table from a file stored in HDFS
+load data inpath '/hive/input/emp.csv' into table emp;
+  
+
+ SELECT
+select * from emp;
+select employee_id, first_name from emp;
+WHERE
+select * from emp where employee_id= 10099;
+
+ORDER BY
+select * from emp order by first_name limit 3
+
+Use of COUNT
+select count(*) from emp;
+select employee_id, first_name from emp order by employee_id desc limit 5.
+
+ MAX
+select max(employee_id) from emp;
+MIN
+select min(employee_id) from emp;
+
+ GROUP BY
+select gender, count(*) from emp group by gender;
+select gender, max(employee_id) from emp group by gender;
+
+
+ JOIN
+
+ We can create the customer table as follows
+create table customers(
+    Id INT,
+    name STRING,
+    age INT,
+    address STRING,
+     salary double)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE;
+
+hive>load data inpath '/hive/input/customers.txt' into table customers;
+ 
+The above query will read the file from specified location and load the data into customers table create orders table
+hive>create table orders(
+oid INT,
+o_date DATE,
+customer_id INT,
+    amount INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+ LINES TERMINATED BY '\n'
+STORED AS TEXTFILE;
+   The above query will read the file from specified location and load the data into orders table We can apply join on customers and orders as follows.
+The result of above join query is shown below
+  hive>SELECT c.ID, c.NAME, c.AGE, o.AMOUNT
+FROM CUSTOMERS c JOIN ORDERS o
+ON (c.ID = o.CUSTOMER_ID);
+
+hive>load data inpath '/hive/input/orders.txt' into table orders;
+  
+Outer Join
+hive>SELECT c.ID, c.NAME, o.AMOUNT, o.O_DATE FROM CUSTOMERS c
+LEFT OUTER JOIN ORDERS o
+ON (c.ID = o.CUSTOMER_ID);
+
+Right outer join
+
+  hive>SELECT c.ID, c.NAME, o.AMOUNT, o.O_DATE FROM CUSTOMERS c
+RIGHT OUTER JOIN ORDERS o
+ ON (c.ID = o.CUSTOMER_ID);
+
+Full outer join
+hive>SELECT c.ID, c.NAME, o.AMOUNT, o.O_DATE
+FROM CUSTOMERS c
+FULL OUTER JOIN ORDERS o
+ON (c.ID = o.CUSTOMER_ID);
+
+Partitioning
+Hive table partition is a way to split a large table into smaller tables based on one or more partition keys. Use of partition in HIVE
+    hive> CREATE TABLE zipcodes(
+RecordNumberint,
+Zipcodeint,
+City string,
+State string
+ )
+PARTITIONED BY(Country string)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+ You can use the following command to look at the directory structure
+  [centos@master~]$hadoop fs -ls
+ /user/hive/warehouse/test.db/zipcodes/
+  Bucketing
+Hive Bucketing is a way to split the table into a managed number of clusters with or without partitions Use of bucketing in HIVE
+ hive>CREATE TABLE zipcodes(
+RecordNumberint,
+Zipcodeint,
+City string,
+State string,
+Country string)
+CLUSTERED BY (State) INTO 4 BUCKETS
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+ The above query will create 4 buckets by state.
+Load the data file into the table using following command.
+
+hive>load data inpath '/hive/input/zipcodes.csv' into table zipcodes;
+  When you load the data into the partition table, Hive internally splits the records based on the partition key and
+ stores each partition data into a sub-directory of tables directory on HDFS.
+   hive>load data inpath '/hive/input/zipcodes.csv' into table zipcodes;
+  When you load the data into the partition table, Hive internally splits the records based on the partition key and
+ stores each partition data into a sub-directory of tables directory on HDFS.
+
+  Each bucket is stored as a file within the table’s directory. You can use the following command to see the
+ directory structure.
+  [centos@master~]$hadoop fs -ls /user/hive/warehouse/test.db/zipcodes/
+   You can also create bucketing on a partitioned table to further split the data to improve the query performance
+ of the partitioned table.
+ Use of partitioning and bucketing in HIVE
+  hive>CREATE TABLE zipcodes4(
+RecordNumberint,
+Zipcodeint,
+City string,
+State string
+)
+PARTITIONED BY(country string)
+CLUSTERED BY (State) INTO 4 BUCKETS
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+ The above query will create partitioning based on country then with in each partition it will create 4 buckets based on state.
+You can use the following commands to list the directory structure.
+   [centos@master~]$hadoop fs -ls /user/hive/warehouse/test.db/zipcodes/
+
+  Further you can list a partitioned directory as follows.
+  [centos@master~]$hadoop fs -ls /user/hive/warehouse/test.db/zipcodes/country=%27India%27
+     [centos@master~]$hadoop fs -ls /user/hive/warehouse/test.db/zipcodes/country=%27USA%27
+   You can query partitioned and bucketed table as you query other tables. The queries that involve condition on
+ partitioned or bucketed attributes will give better performance on large datasets.
+CREATING EXTERNAL TABLE
+to /user/hive/warehouse
+ Hive owns the data for the internal tables. By default, an internal table will be created in a folder path similar
+ directory of HDFS. If we drop the managed table or partition, the table data and the
+ metadata associated with that table will be deleted from the HDFS.
+ Hive does not manage the data of the External tables. External tables are stored outside the warehouse
+ directory. Whenever we drop the external table, then only the metadata associated with the table will get
+ deleted, the table data remains untouched by Hive.
+ We can create the external table by specifying the
+ keyword in the Hive create table statement.
+  hive>CREATE external TABLE zipcodes_ext(
+RecordNumberint,
+Zipcodeint,
+City string,
+ State string,
+Country string)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+Location '/hive/ext_table'; //location where the data will
+//reside
+
+EXTERNAL
+
+  The above command will create an external table zipcodes_ext and the data for the same will be stored in
+ '/hive/ext_table'
+ Load the data file into the table using following command.
+you can see this input data file in the specified directory as follows.
+[centos@master~]$hadoop fs -ls /hive/ext_table
+Outputs/Results
+ Students should be able to appreciate the usage of HIVE queries.
+ Students should be able to appreciate partitioning and bucketing feature of HIVE
+Observations
+Students should carefully observe the syntax of HIVE queries and verify the output
+  hive>load data inpath '/hive/input/zipcodes.csv' into table zipcodes_ext;
+ 

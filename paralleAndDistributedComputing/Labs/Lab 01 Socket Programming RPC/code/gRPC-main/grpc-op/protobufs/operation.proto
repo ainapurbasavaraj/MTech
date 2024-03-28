@@ -1,0 +1,14 @@
+syntax = "proto3";
+message OperationRequest{
+    string op = 1;
+    int32 a = 2;
+    int32 b = 3;
+}
+
+message OperationResponse{
+    int32 result = 1;
+}
+
+service Calculator{
+    rpc Calculate(OperationRequest) returns (OperationResponse);
+}

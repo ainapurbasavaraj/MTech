@@ -1,0 +1,30 @@
+>pig –x local
+
+LOAD:
+students = LOAD 'student_data.txt' USING PigStorage(',') as (Id: int, Name: chararray, City: chararray, gender:chararray, cgpa: double);
+
+describe students;
+output: students: {Id: int,Name: chararray,City: chararray,gender: chararray,cgpa: double}
+
+dump students;
+studentDetails= FOREACH students generate *;
+studentMales= FILTER students by gender == 'M';
+studentGender= Group students by gender;
+sorting
+orderByName= ORDER students by name;
+orderByCgpa= ORDER students by cgpa DESC;
+limit_std= LIMIT students 2;
+SPLIT students into femalestudents IF gender=='F', malestudents IF gender=='M';
+studentGender= Group students by gender; 
+ stdcount= FOREACH studentGender generate COUNT (students.cgpa)
+studentGender= Group students by gender; grunt>avgcgpa= FOREACH studentGender generate AVG (students.cgpa)
+studentGender= Group students by gender; grunt>maxcgpa= FOREACH studentGender generate MAX (students.cgpa)
+INNER JOIN
+customer_orders = JOIN customers BY id, orders BY customer_id;
+LEFT OUTER JOIN
+outer_left = JOIN customers BY id LEFT OUTER, orders BY customer_id;
+outer_right = JOIN customers BY id RIGHT, orders BY customer_id;
+outer_full = JOIN customers BY id FULL OUTER, orders BY customer_id;
+
+Storing to hadoop fs
+STORE outer_full INTO '/user/pig/Output/ ' USING PigStorage (',');

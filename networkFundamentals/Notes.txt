@@ -283,6 +283,36 @@ How control plane works in overlay networks.
 - Advertises its private IP addresses to other edge with in its overlay network only not to other networks.
 - It avoids flooding hence used in large sized DCN networks (for more than 100 VMs)
 
+VXLAN MPBGP EVPN Control Plane
+• The Flood-and-Learn method creates significant flooding traffic resulting in network expansion difficulties
+• As a solution to these problems, EVPN is introduced on the VXLAN control plane
+• EVPN = Ethernet Virtual Private Network OR Ethernet VPN
+• By referring to the BGP/MPLS IP VPN mechanism, EVPN defines several types of BGP EVPN routes by extending BGP.
+• The PE node role described in BGP MPLS EVPN is equivalent to the VTEP/network virtualization edge (NVE) device
+• It advertises BGP routes on the network to implement automatic VTEP discovery and host address learning.
+
+  EVPN Advantages
+• Using EVPN on the control plane offers the following advantages:
+• VTEPs can be automatically discovered and VXLAN tunnels can be automatically established, overall simplifying network deployment and expansion.
+• EVPN can advertise Layer 2 MAC addresses and Layer 3 routing information simultaneously.
+• Flooding traffic is reduced on the network.
+
+MP-BGP
+• Traditional BGP-4 uses Update packets to exchange routing information between peers
+• An Update packet can advertise a type of reachable routes with the same path attributes, placed in Network Layer Reachability Information (NLRI) fields.
+• BGP-4 can manage only IPv4 unicast routing information
+• As a solution, Multiprotocol Extensions for BGP (MP-BGP) was developed as a means to support multiple network layer protocols, including IPv6 and multicast.
+• MP-BGP extends NLRI fields based on BGP-4.
+• After extension, the description of the address family is added to the NLRI fields to differentiate network layer protocols.
+• These include the IPv6 unicast address family and VPN instance address family. • The EVPN NLRI defines different types of BGP EVPN routes
+
+  For completeness – the VXLAN Data Plane!
+• Depending on the traffic flow direction and scope, DCN traffic can be classified into east-west traffic (transmitted within a DC) and north-south traffic (sent across the DC)
+• Traffic transmitted within the same subnet of a VPC is forwarded by a TOR switch after Layer 2 VXLAN encapsulation.
+• Traffic transmitted between subnets of the same VPC is forwarded by a TOR switch based on Layer 3 routes. This is done after Layer 3 VXLAN encapsulation.
+• Traffic transmitted between VPCs is forwarded across subnets, and isolation for security purposes is required. Therefore, to meet this, the Traffic needs to pass through a firewall and reach the Layer 3 VXLAN gateway.
+• Traffic sent from a user outside the DC to a server in a VPC passes through the Intrusion Prevention System (IPS) or firewall, LB, VXLAN gateway, and TOR switch before reaching the server.
+
 ********************************************************************************************************************
 Multi DC networking
 

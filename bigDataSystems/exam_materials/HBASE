@@ -1,0 +1,32 @@
+CREATE TABLE:
+create ‘emp’ ,‘personal information’ , ‘professional information’
+
+DISABLE : disable ‘emp’
+DISABLE ALL with REGEX : disable_all ‘e.*’
+DISCRIBE : describe ‘emp’
+ALTER :alter ‘emp’, NAME=> ‘personal information’, VERSIONS => 5
+ALTER TABLE SCOPE :alter ‘emp’, READONLY
+REMOVE TABLE SCOPE : alter ‘emp’, METHOD => ‘table_att_unset’, NAME=>READONLY
+EXISTS : exists ‘emp’
+DROP TABLE:
+hbase> disable ‘<table-name>’
+hbase> drop ‘<table-name>’
+INSERT DATA : put ‘<tab-name>’, ‘row-num’, ‘<colfamily:colname>’, ‘<value>’
+VIEW TBALE : scan ‘<table-name>’
+UPDATE : put ‘<tab-name>’, ‘row-num’, ‘<colfamily:colname>’, ‘<new-value>’
+READ SPECIFIC ROW : get ‘<tab-name>’, ‘row-num’
+READ SPECIFIC Column : get ‘<tab-name>’,‘row-num’ {COLUMN=> ‘cf-name:col- name’}
+DELETE DATA FROM TABLES :delete ‘<tab-name>’, ‘row-num’, ‘<col-name>’, ‘<time- stamp>’
+COUNT NUMBER OF ROWS :count ‘<table-name>’
+DROP AND RECREATE TABLE : truncate ‘<table-name>’
+
+FILTER : 
+COMAPRISON with NAME:
+scan 'emp', { FILTER =>SingleColumnValueFilter.new(Bytes.toBytes('personal information'), Bytes.toBytes('name'), 
+CompareFilter::CompareOp.valueOf('EQUAL'),BinaryComparator.new(Bytes .toBytes('seema')))}
+
+COMPARISON with SALARY :
+scan 'emp', { FILTER =>SingleColumnValueFilter.new(Bytes.toBytes('professional information'), Bytes.toBytes('salary'), CompareFilter::CompareOp.valueOf('GREATER'),BinaryComparator.new(Byt es.toBytes('100000')))}
+
+Displaying selected columns based on filtering condition:
+scan 'emp', {COLUMNS=>['personal information:name','professional information:salary'],FILTER =>SingleColumnValueFilter.new(Bytes.toBytes('professional information'), Bytes.toBytes('salary'), CompareFilter::CompareOp.valueOf('GREATER'),BinaryComparator.new(Byt es.toBytes('100000')))}
