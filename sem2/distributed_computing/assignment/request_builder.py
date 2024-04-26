@@ -1,6 +1,6 @@
 
 from config_loader import keys, Methods
-from common import ServerRequestData
+from common import ServerRequestData, get_ip_by_hostname, getHostname
 
 class RequestBuilder:
 
@@ -10,9 +10,13 @@ class RequestBuilder:
         self.config = config
         self.req_args = req_args
         self.method = method
+        self.endPoint = 'request-token'
 
     def buildUrl(self):
-        self.requestData.url = self.config[self.node] + self.config[keys.SERVICE_NAME]
+        hostname = getHostname()
+        base_url = get_ip_by_hostname(hostname)
+        base_url = 'http://%s:%s' %(base_url, self.config[self.node])
+        self.requestData.url = base_url + '/' + self.config[keys.SERVICE_NAME] + '/' + self.endPoint
         return self
 
     def buildBody(self):
