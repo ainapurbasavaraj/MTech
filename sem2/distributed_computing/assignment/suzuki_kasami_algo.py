@@ -51,7 +51,7 @@ class SuzukiKasami():
     def lock(self):
         print("Trying to enter critical section...")
         # Check if I am the token-bearer
-        if self.config[keys.TOKEN_BEARER] == self.node:
+        if self.token_bearer == self.node:
             print("I am the token bearer. No need to ask permission.")
         else:
             #increment the RN
@@ -71,18 +71,18 @@ class SuzukiKasami():
              #   for future in concurrent.futures.as_completed(future_to_send):
              #       response = future_to_send
 
-                print("RECEIVED RESPONSE : %s" %response)
-                #Update the token-bearer after successfully receiving info
-                if response.get(keys.TOKEN):
-                    self.token_bearer = self.node
-                    print("TOKEN RECEIVED : %s" %response.get(keys.TOKEN))
+                    print("RECEIVED RESPONSE : %s" %response)
+                    #Update the token-bearer after successfully receiving info
+                    if response.get(keys.TOKEN):
+                        self.token_bearer = self.node
+                        print("TOKEN RECEIVED : %s" %response.get(keys.TOKEN))
                 
-                    #update the token queue with token queue from response
-                    self.token_queue.extend(response[keys.TOKEN_QUEUE])
+                        #update the token queue with token queue from response
+                        self.token_queue.extend(response[keys.TOKEN_QUEUE])
 
-                    # remove the node from the token queue
-                    self.token_queue.remove(self.node)
-                    break
+                        # remove the node from the token queue
+                        self.token_queue.remove(self.node)
+                        break
 
                     
     def unlock(self):
@@ -108,7 +108,7 @@ class SuzukiKasami():
         print(self.LN[requestingNode])
         if self.token_bearer == self.node and \
             self.RN[requestingNode] == self.LN[requestingNode]+1:
-
+            self.token_bearer = requestingNode
             self.token_queue.append(requestingNode)
             
             response[keys.TOKEN] = self.config[keys.TOKEN]
