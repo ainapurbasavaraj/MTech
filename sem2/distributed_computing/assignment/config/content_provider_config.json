@@ -3,8 +3,8 @@
     "token" : "1234",
     "token-bearer" : "node1",
     "num-nodes" : 3,
-    "node1" : "5678",
-    "node2" : "5688",
-    "node3" : "5698",
+    "node1" : "172.31.7.225:5678",
+    "node2" : "172.31.7.225:5688",
+    "node3" : "172.31.0.140:5698",
     "service-name" : "contentprovider"
 }

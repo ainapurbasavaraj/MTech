@@ -10,7 +10,7 @@ import threading
 
 
 #url = 'http://localhost:80/rpc'
-hostname = common.getHostname()
+hostname = "node2"
 base_url = common.get_ip_by_hostname(hostname)
 url = 'http://%s/rpc' %(base_url)
 
@@ -34,6 +34,7 @@ def watch_content(node, handler):
             params = json.loads(params, strict=False)
             print("%s wants to enter in to critical section." %(node))
             handler.lock()
+            print("contacting server : %s" %url)
             result = requests.post(url, json=request('addfile', params=params))
             print("Releasing the critical section")
             handler.unlock()

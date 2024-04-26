@@ -40,10 +40,13 @@ class SuzukiKasami():
         requestBody = dict()
         requestBody[keys.NODE] = self.node
         requestBody[keys.SEQUENCE_NUMBER] = self.RN[self.node]
-
-        builder = RequestBuilder(node, self.config, requestBody, Methods.POST)
-        requestData = builder.build()
-        return RequestHandler.Request(requestData)
+        try:
+            builder = RequestBuilder(node, self.config, requestBody, Methods.POST)
+            requestData = builder.build()
+            return RequestHandler.Request(requestData)
+        except Exception as e:
+            print("Not able to connect to node %s, error : %s" %(node, str(e)))
+            return {}
 
     def lock(self):
         print("Trying to enter critical section...")
@@ -54,31 +57,40 @@ class SuzukiKasami():
             #increment the RN
             self.increment_rn()
             #send this sequence info to other nodes
-            with concurrent.futures.ThreadPoolExecutor(max_workers=self.workers) as executror:
+            for node in self.RN.keys():
+                if node is not self.node:
+                    print("connecting node : %s, My node : %s" %(node, self.node))
+                    response = self.request_token(node)
+            #with concurrent.futures.ThreadPoolExecutor(max_workers=self.workers) as executror:
 
-                future_to_send = {
-                    executror.submit(self.request_token, node): 
-                    node for node in self.RN.keys()
-                    if node is not self.node}
+             #   future_to_send = {
+             #       executror.submit(self.request_token, node): 
+             #       node for node in self.RN.keys()
+             #       if node is not self.node}
 
-                for future in concurrent.futures.as_completed(future_to_send):
-                    response = future_to_send.result()
+             #   for future in concurrent.futures.as_completed(future_to_send):
+             #       response = future_to_send
 
+                print("RECEIVED RESPONSE : %s" %response)
                 #Update the token-bearer after successfully receiving info
                 if response.get(keys.TOKEN):
                     self.token_bearer = self.node
+                    print("TOKEN RECEIVED : %s" %response.get(keys.TOKEN))
                 
                     #update the token queue with token queue from response
                     self.token_queue.extend(response[keys.TOKEN_QUEUE])
 
                     # remove the node from the token queue
                     self.token_queue.remove(self.node)
+                    break
 
                     
     def unlock(self):
         self.increment_ln()
 
     def process(self, data):
+        print(data)
+        data = json.loads(data)
         #update RN with max of (RN[i], sequence_number)
         requestingNode = data[keys.NODE]
         self.RN[requestingNode] = \
@@ -91,14 +103,18 @@ class SuzukiKasami():
     def reply(self, requestingNode):
 
         response = dict()
+        print(self.token_bearer)
+        print(self.RN[requestingNode])
+        print(self.LN[requestingNode])
         if self.token_bearer == self.node and \
-            self.RN[requestingNode] == self.RN[requestingNode]+1:
+            self.RN[requestingNode] == self.LN[requestingNode]+1:
 
             self.token_queue.append(requestingNode)
             
             response[keys.TOKEN] = self.config[keys.TOKEN]
             response[keys.TOKEN_QUEUE] = [token for token in self.token_queue]
 
+        print("sending response : %s" %response)
         return json.dumps(response)
                     
  
