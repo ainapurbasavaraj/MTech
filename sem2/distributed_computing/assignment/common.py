@@ -6,6 +6,15 @@ This is the config file to configure server ip address and port that client serv
 
 '''
 
+from dataclasses import dataclass, field
+
+@dataclass
+class ServerRequestData:
+    method : str = None
+    url    : str = None
+    header : dict = field(default_factory = dict)
+    body   : dict = field(default_factory = dict)
+
 SERVER_IP =  "localhost" #Change it to private ip address of server in lab env
 SERVER_PORT = "8800" 
 

@@ -47,9 +47,10 @@ class FileServer:
         if os.path.exists(absFilePath):
             with open(absFilePath, 'r') as f:
                 return f.read()
-        else:
+        # else:
             #contact other servers
-            return self.get_data_from_other_servers(file_name, headers)
+            # return self.get_data_from_other_servers(file_name, headers)
+        return "KO"
 
     def get_data_from_other_servers(self, file_name, headers):
         

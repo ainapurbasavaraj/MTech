@@ -1,0 +1,10 @@
+
+{
+    "token" : "1234",
+    "token-bearer" : "node1",
+    "num-nodes" : 3,
+    "node1" : "127.0.0.1:5678",
+    "node2" : "127.0.0.1:5678",
+    "node3" : "127.0.0.1:5678",
+    "service-name" : "contentprovider"
+}
