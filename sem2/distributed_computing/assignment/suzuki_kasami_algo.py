@@ -53,6 +53,7 @@ class SuzukiKasami():
         # Check if I am the token-bearer
         if self.token_bearer == self.node:
             print("I am the token bearer. No need to ask permission.")
+            return True
         else:
             #increment the RN
             self.increment_rn()
@@ -82,7 +83,9 @@ class SuzukiKasami():
 
                         # remove the node from the token queue
                         self.token_queue.remove(self.node)
-                        break
+                        return True
+        return False
+
 
                     
     def unlock(self):
