@@ -33,8 +33,6 @@ port = CONFIG[NODE].split(':')[1]
 
 DISTRIBUTED_CRITICAL_SECTION_HANDLER = SuzukiKasami(NODE, CONFIG)
 
-start_thread(NODE, DISTRIBUTED_CRITICAL_SECTION_HANDLER)
-
 @app.route('/')
 def index():
     return 'Welcom to Content Provider!!'
@@ -45,4 +43,5 @@ def get_token():
 
 
 if __name__ == "__main__":
-    app.run(debug = True, host = "0.0.0.0", port = int(port))
+    start_thread(NODE, DISTRIBUTED_CRITICAL_SECTION_HANDLER)
+    app.run(debug = False, host = "0.0.0.0", port = int(port))
