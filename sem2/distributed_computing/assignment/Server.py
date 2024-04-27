@@ -23,12 +23,12 @@ def get_file_from_server(path):
 
 @app.route('/rpc', methods=["POST"])
 def rpc():
-    print(request.data)
+    #print(request.data)
     return dispatch(request.data.decode())
 
 @method
 def addfile(filename, data) ->Result:
-    print(filename)
+    print("Adding file to server : %s" %filename)
     fileServer.add_file_to_server(filename, data)
     return Success("OK")
 

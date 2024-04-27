@@ -41,6 +41,8 @@ class FileServer:
         with open(self.metadataFile, 'w') as f:
             f.write(filename)
 
+        print("File %s added to server." %(filePath))
+
     
     def get_file_from_server(self, file_name, headers):
         absFilePath = os.path.join(self.storagePath,file_name)
