@@ -38,8 +38,8 @@ class FileServer:
             f.write(data)
         #append the list
         self.filesList.append(filename)
-        with open(self.metadataFile, 'w') as f:
-            f.write(filename)
+        #with open(self.metadataFile, 'w') as f:
+        #    f.write(filename)
 
         print("File %s added to server." %(filePath))
 

@@ -28,7 +28,7 @@ def get_token():
 
 @app.route('/contentprovider/release-token', methods=["POST"])
 def release_token():
-    DISTRIBUTED_CRITICAL_SECTION_HANDLER.update_token_queue(request.data)
+    return DISTRIBUTED_CRITICAL_SECTION_HANDLER.update_token_queue(request.data)
 
 
 if __name__ == "__main__":

@@ -15,13 +15,13 @@ class RequestHandler:
       returns:
          response dictionary
       """
-      print("\nSending request : %s\n" %(requestData.__str__()))
+      #print("\nSending request : %s\n" %(requestData.__str__()))
       response = requests.request(
          method=requestData.method,
          url=requestData.url,
          headers=requestData.header,
          json=requestData.body,
-         timeout=5
+         timeout=20
       )
       if not response.ok:
          raise RuntimeError('Request returned status code: %d'

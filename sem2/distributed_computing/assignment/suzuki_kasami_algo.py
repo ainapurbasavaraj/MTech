@@ -7,7 +7,6 @@ from request_handler import RequestHandler
 import concurrent.futures
 import json
 import os
-from tabulate import tabulate
 
 class SuzukiKasami():
 
@@ -37,12 +36,16 @@ class SuzukiKasami():
         self.LN[self.node] = self.LN[self.node] + 1
 
     def update_token_queue(self, data):
-        self.token_queue = data[keys.TOKEN_QUEUE]
+        data = json.loads(data)
+        print("Updating token queue %s " %data)
+        token_list = data[keys.TOKEN_QUEUE]
+        [self.token_queue.append(i) for i in token_list]
+        return {}
 
     def request_token(self, node):
-        print("Sending request to node : %s\n" %node)
+        #print("Sending request to node : %s\n" %node)
         if node == self.node:
-            print("Don't send request to itself.. returning\n")
+            #print("Don't send request to itself.. returning\n")
             return {}
         requestBody = dict()
         requestBody[keys.NODE] = self.node
@@ -57,6 +60,7 @@ class SuzukiKasami():
 
     def lock(self):
         #print("\nTrying to enter critical section...")
+        print("\n Acquiring lock....")
         #increment the RN
         self.increment_rn()
         # Check if I am the token-bearer
@@ -81,20 +85,23 @@ class SuzukiKasami():
 
                     #print("RECEIVED RESPONSE : %s" %response)
                     #Update the token-bearer after successfully receiving info
-                    while True:
-                        token = response.get(keys.TOKEN_QUEUE)
-                        if token or \
-                            (self.token_queue and self.token_queue[0] == self.node):
-                            self.token_bearer = self.node
-                            #print("TOKEN RECEIVED :  %s" %response)
+                    token = response.get(keys.TOKEN_QUEUE)
+                    if token and token[0] == self.node:
+                        self.token_bearer = self.node
+                        print("TOKEN RECEIVED :  %s" %response)
                     
-                            #update the token queue with token queue from response
-                            if token:
-                                self.token_queue.extend(token)
+                        #update the token queue with token queue from response
+                        self.token_queue.extend(token)
 
-                            # remove the node from the token queue
-                            self.token_queue.popleft()
-                            return True
+                        # remove the node from the token queue
+                        self.token_queue.popleft()
+                        return True
+
+            while True:
+                if self.token_queue and self.token_queue[0] == self.node:
+                    self.token_bearer = self.node
+                    self.token_queue.popleft()
+                    return True
         return False
 
 
@@ -107,11 +114,11 @@ class SuzukiKasami():
                     
     def unlock(self):
         self.increment_ln()
-        self.display()
-
+        
         if self.token_queue:
             node = self.token_queue[0]
             requestBody = dict()
+            self.token_bearer = node
             requestBody[keys.NODE] = self.node
             requestBody[keys.TOKEN_QUEUE] = [token for token in self.token_queue]
             try:
@@ -121,6 +128,7 @@ class SuzukiKasami():
             except Exception as e:
                 print("Not able to connect to node %s, error : %s" %(node, str(e)))
                 #return {}
+        self.display()
 
 
     def process(self, data):
@@ -146,6 +154,7 @@ class SuzukiKasami():
             # check if current process completed its critical section
             # Then only send token
             if self.RN[self.node] == self.LN[self.node]:
+                self.token_bearer = self.token_queue[0]
                 response[keys.TOKEN] = self.config[keys.TOKEN]
                 response[keys.NODE] = self.node
                 response[keys.TOKEN_QUEUE] = [token for token in self.token_queue]
@@ -153,10 +162,10 @@ class SuzukiKasami():
 
         self.display()
 
-        print("*****sending response***** \n")
+        #print("*****sending response***** \n")
         import pprint
         pp = pprint.PrettyPrinter(depth=4)
-        pp.pprint(response)
+        #pp.pprint(response)
         return json.dumps(response)
                     
  
