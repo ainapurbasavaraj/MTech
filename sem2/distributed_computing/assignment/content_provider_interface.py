@@ -26,6 +26,10 @@ def index():
 def get_token():
     return DISTRIBUTED_CRITICAL_SECTION_HANDLER.process(request.data)
 
+@app.route('/contentprovider/release-token', methods=["POST"])
+def release_token():
+    DISTRIBUTED_CRITICAL_SECTION_HANDLER.update_token_queue(request.data)
+
 
 if __name__ == "__main__":
     start_thread(NODE, DISTRIBUTED_CRITICAL_SECTION_HANDLER)

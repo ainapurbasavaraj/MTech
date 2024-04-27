@@ -4,13 +4,13 @@ from common import ServerRequestData, get_ip_by_hostname, getHostname
 
 class RequestBuilder:
 
-    def __init__(self, node, config, req_args, method) -> None:
+    def __init__(self, node, config, req_args, endpoint, method) -> None:
         self.requestData : ServerRequestData = ServerRequestData()
         self.node = node
         self.config = config
         self.req_args = req_args
         self.method = method
-        self.endPoint = 'request-token'
+        self.endPoint = endpoint
 
     def buildUrl(self):
         base_url = 'http://%s' %(self.config[self.node])

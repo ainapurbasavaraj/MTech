@@ -21,7 +21,7 @@ class RequestHandler:
          url=requestData.url,
          headers=requestData.header,
          json=requestData.body,
-         timeout=15
+         timeout=5
       )
       if not response.ok:
          raise RuntimeError('Request returned status code: %d'

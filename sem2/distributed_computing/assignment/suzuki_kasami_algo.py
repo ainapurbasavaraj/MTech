@@ -36,6 +36,9 @@ class SuzukiKasami():
     def increment_ln(self):
         self.LN[self.node] = self.LN[self.node] + 1
 
+    def update_token_queue(self, data):
+        self.token_queue = data[keys.TOKEN_QUEUE]
+
     def request_token(self, node):
         print("Sending request to node : %s\n" %node)
         if node == self.node:
@@ -45,7 +48,7 @@ class SuzukiKasami():
         requestBody[keys.NODE] = self.node
         requestBody[keys.SEQUENCE_NUMBER] = self.RN[self.node]
         try:
-            builder = RequestBuilder(node, self.config, requestBody, Methods.POST)
+            builder = RequestBuilder(node, self.config, requestBody, 'request-token', Methods.POST)
             requestData = builder.build()
             return RequestHandler.Request(requestData)
         except Exception as e:
@@ -54,13 +57,13 @@ class SuzukiKasami():
 
     def lock(self):
         #print("\nTrying to enter critical section...")
+        #increment the RN
+        self.increment_rn()
         # Check if I am the token-bearer
         if self.token_bearer == self.node:
             print("I am the token bearer. No need to ask permission.")
             return True
         else:
-            #increment the RN
-            self.increment_rn()
             #send this sequence info to other nodes
             #for node in self.RN.keys():
             #    if node is not self.node:
@@ -78,29 +81,47 @@ class SuzukiKasami():
 
                     #print("RECEIVED RESPONSE : %s" %response)
                     #Update the token-bearer after successfully receiving info
-                    if response.get(keys.TOKEN):
-                        self.token_bearer = self.node
-                        print("TOKEN RECEIVED :  %s" %response)
-                
-                        #update the token queue with token queue from response
-                        self.token_queue.extend(response[keys.TOKEN_QUEUE])
+                    while True:
+                        token = response.get(keys.TOKEN_QUEUE)
+                        if token or \
+                            (self.token_queue and self.token_queue[0] == self.node):
+                            self.token_bearer = self.node
+                            #print("TOKEN RECEIVED :  %s" %response)
+                    
+                            #update the token queue with token queue from response
+                            if token:
+                                self.token_queue.extend(token)
 
-                        # remove the node from the token queue
-                        self.token_queue.remove(self.node)
-                        return True
+                            # remove the node from the token queue
+                            self.token_queue.popleft()
+                            return True
         return False
 
 
     def display(self):
-         print('\ntoken_queue : %s ' %self.token_queue)
-         print('\ntoken_bearer : %s ' %self.token_bearer)
-         print('\nRN : %s' %self.RN)
-         print('\nLN : %s' %self.LN)
+        print("\n*** Current Data state ***")
+        print('\ntoken_queue : %s ' %self.token_queue)
+        print('\ntoken_bearer : %s ' %self.token_bearer)
+        print('\nRN : %s' %self.RN)
+        print('\nLN : %s' %self.LN)
                     
     def unlock(self):
         self.increment_ln()
-        print("\n****Current Data state at requestor***\n")
         self.display()
+
+        if self.token_queue:
+            node = self.token_queue[0]
+            requestBody = dict()
+            requestBody[keys.NODE] = self.node
+            requestBody[keys.TOKEN_QUEUE] = [token for token in self.token_queue]
+            try:
+                builder = RequestBuilder(node, self.config, requestBody, 'release-token', Methods.POST)
+                requestData = builder.build()
+                RequestHandler.Request(requestData)
+            except Exception as e:
+                print("Not able to connect to node %s, error : %s" %(node, str(e)))
+                #return {}
+
 
     def process(self, data):
         #print(data)
@@ -119,14 +140,17 @@ class SuzukiKasami():
         response = dict()
         if self.token_bearer == self.node and \
             self.RN[requestingNode] == self.LN[requestingNode]+1:
-            self.token_bearer = requestingNode
+            #self.token_bearer = requestingNode
             self.token_queue.append(requestingNode)
             
-            response[keys.TOKEN] = self.config[keys.TOKEN]
-            response[keys.NODE] = self.node
-            response[keys.TOKEN_QUEUE] = [token for token in self.token_queue]
+            # check if current process completed its critical section
+            # Then only send token
+            if self.RN[self.node] == self.LN[self.node]:
+                response[keys.TOKEN] = self.config[keys.TOKEN]
+                response[keys.NODE] = self.node
+                response[keys.TOKEN_QUEUE] = [token for token in self.token_queue]
 
-        print("\n*** Current Data state at receiver***")
+
         self.display()
 
         print("*****sending response***** \n")
