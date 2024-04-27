@@ -15,7 +15,7 @@ class RequestHandler:
       returns:
          response dictionary
       """
-      print("Sending request to : %s" %(requestData.url))
+      print("\nSending request : %s\n" %(requestData.__str__()))
       response = requests.request(
          method=requestData.method,
          url=requestData.url,

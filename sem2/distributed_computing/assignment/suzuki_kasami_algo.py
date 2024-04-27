@@ -7,7 +7,7 @@ from request_handler import RequestHandler
 import concurrent.futures
 import json
 import os
-
+from tabulate import tabulate
 
 class SuzukiKasami():
 
@@ -18,7 +18,7 @@ class SuzukiKasami():
         self.init_ln()
         self.token_queue = deque()
         self.token_bearer = self.config[keys.TOKEN_BEARER]
-        self.workers = self.config[keys.NUM_NODES] - 1
+        self.workers = self.config[keys.NUM_NODES]
 
     def init_rn(self):
         self.RN = dict()
@@ -37,6 +37,10 @@ class SuzukiKasami():
         self.LN[self.node] = self.LN[self.node] + 1
 
     def request_token(self, node):
+        print("Sending request to node : %s\n" %node)
+        if node == self.node:
+            print("Don't send request to itself.. returning\n")
+            return {}
         requestBody = dict()
         requestBody[keys.NODE] = self.node
         requestBody[keys.SEQUENCE_NUMBER] = self.RN[self.node]
@@ -49,7 +53,7 @@ class SuzukiKasami():
             return {}
 
     def lock(self):
-        print("Trying to enter critical section...")
+        #print("\nTrying to enter critical section...")
         # Check if I am the token-bearer
         if self.token_bearer == self.node:
             print("I am the token bearer. No need to ask permission.")
@@ -58,25 +62,25 @@ class SuzukiKasami():
             #increment the RN
             self.increment_rn()
             #send this sequence info to other nodes
-            for node in self.RN.keys():
-                if node is not self.node:
-                    print("connecting node : %s, My node : %s" %(node, self.node))
-                    response = self.request_token(node)
-            #with concurrent.futures.ThreadPoolExecutor(max_workers=self.workers) as executror:
+            #for node in self.RN.keys():
+            #    if node is not self.node:
+            #        print("connecting node : %s, My node : %s" %(node, self.node))
+            #        response = self.request_token(node)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=self.workers) as executror:
 
-             #   future_to_send = {
-             #       executror.submit(self.request_token, node): 
-             #       node for node in self.RN.keys()
-             #       if node is not self.node}
+                future_to_send = {
+                    executror.submit(self.request_token, node): 
+                    node for node in self.RN.keys()
+                    }
 
-             #   for future in concurrent.futures.as_completed(future_to_send):
-             #       response = future_to_send
+                for future in concurrent.futures.as_completed(future_to_send):
+                    response = future.result()
 
-                    print("RECEIVED RESPONSE : %s" %response)
+                    #print("RECEIVED RESPONSE : %s" %response)
                     #Update the token-bearer after successfully receiving info
                     if response.get(keys.TOKEN):
                         self.token_bearer = self.node
-                        print("TOKEN RECEIVED : %s" %response.get(keys.TOKEN))
+                        print("TOKEN RECEIVED :  %s" %response)
                 
                         #update the token queue with token queue from response
                         self.token_queue.extend(response[keys.TOKEN_QUEUE])
@@ -87,12 +91,19 @@ class SuzukiKasami():
         return False
 
 
+    def display(self):
+         print('\ntoken_queue : %s ' %self.token_queue)
+         print('\ntoken_bearer : %s ' %self.token_bearer)
+         print('\nRN : %s' %self.RN)
+         print('\nLN : %s' %self.LN)
                     
     def unlock(self):
         self.increment_ln()
+        print("\n****Current Data state at requestor***\n")
+        self.display()
 
     def process(self, data):
-        print(data)
+        #print(data)
         data = json.loads(data)
         #update RN with max of (RN[i], sequence_number)
         requestingNode = data[keys.NODE]
@@ -106,18 +117,22 @@ class SuzukiKasami():
     def reply(self, requestingNode):
 
         response = dict()
-        print(self.token_bearer)
-        print(self.RN[requestingNode])
-        print(self.LN[requestingNode])
         if self.token_bearer == self.node and \
             self.RN[requestingNode] == self.LN[requestingNode]+1:
             self.token_bearer = requestingNode
             self.token_queue.append(requestingNode)
             
             response[keys.TOKEN] = self.config[keys.TOKEN]
+            response[keys.NODE] = self.node
             response[keys.TOKEN_QUEUE] = [token for token in self.token_queue]
 
-        print("sending response : %s" %response)
+        print("\n*** Current Data state at receiver***")
+        self.display()
+
+        print("*****sending response***** \n")
+        import pprint
+        pp = pprint.PrettyPrinter(depth=4)
+        pp.pprint(response)
         return json.dumps(response)
                     
  

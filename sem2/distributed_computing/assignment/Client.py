@@ -5,7 +5,8 @@ import os
 import common
 import json
 
-hostname = common.getHostname()
+#hostname = common.getHostname()
+hostname = "node2"
 base_url = common.get_ip_by_hostname(hostname)
 base_url = 'http://%s' %(base_url)
 base_path = os.path.join(os.getcwd(), 'downloaded_files')

@@ -14,22 +14,7 @@ NODE = sys.argv[1]
 
 CONFIG = loadconfig()
 
-#hostname = common.getHostname()
-#ip = common.get_ip_by_hostname(hostname)
 port = CONFIG[NODE].split(':')[1]
-#CONFIG[NODE] = "%s:%s" %(ip,port)
-
-#ip_file = os.path.join('config', 'content_server_ip.txt')
-
-#update = False
-#with open(ip_file, 'r') as f:
-#    data = str(f.read())
-#    if not NODE in data:
-#        update = True
-
-#if update:
-#    with open(ip_file, 'a') as f2:
-#        f2.write("%s = %s\n" %(NODE, CONFIG[NODE]))
 
 DISTRIBUTED_CRITICAL_SECTION_HANDLER = SuzukiKasami(NODE, CONFIG)
 
