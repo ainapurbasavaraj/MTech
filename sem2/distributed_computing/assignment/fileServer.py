@@ -43,7 +43,6 @@ class FileServer:
     def add_file_to_server(self, filename, data):
 
         filePath = os.path.join(self.storagePath, filename)
-        is_samefile = False
         
         with open(filePath, 'w') as f:
             f.write(data)
@@ -53,7 +52,7 @@ class FileServer:
             os.remove(filePath)
             return
 
-        self.hashdict[hashfile(path)] = filename
+        self.hashdict[hashfile(filePath)] = filename
 
         print("File %s added to server." %(filePath))
 
