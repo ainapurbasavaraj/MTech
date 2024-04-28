@@ -36,7 +36,7 @@ def watch_content(node, handler):
             print("%s wants to enter in to critical section." %(node))
             if handler.lock():
                 print("Got the token, Adding file %s to server : %s" %(file, url))
-                time.sleep(100)
+                time.sleep(20)
                 result = requests.post(url, json=request('addfile', params=params))
                 print("\nFile added to server, Releasing the lock... ")
                 handler.unlock()

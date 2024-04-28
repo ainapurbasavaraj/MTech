@@ -39,7 +39,9 @@ class SuzukiKasami():
         data = json.loads(data)
         print("Updating token queue %s " %data)
         token_list = data[keys.TOKEN_QUEUE]
-        [self.token_queue.append(i) for i in token_list]
+        token_queue = deque()
+        [token_queue.append(i) for i in token_list]
+        self.token_queue = token_queue
         return {}
 
     def request_token(self, node):
@@ -50,6 +52,7 @@ class SuzukiKasami():
         requestBody = dict()
         requestBody[keys.NODE] = self.node
         requestBody[keys.SEQUENCE_NUMBER] = self.RN[self.node]
+        requestBody[keys.LN_SEQUENCE] = self.LN[self.node]
         try:
             builder = RequestBuilder(node, self.config, requestBody, 'request-token', Methods.POST)
             requestData = builder.build()
@@ -68,11 +71,6 @@ class SuzukiKasami():
             print("I am the token bearer. No need to ask permission.")
             return True
         else:
-            #send this sequence info to other nodes
-            #for node in self.RN.keys():
-            #    if node is not self.node:
-            #        print("connecting node : %s, My node : %s" %(node, self.node))
-            #        response = self.request_token(node)
             with concurrent.futures.ThreadPoolExecutor(max_workers=self.workers) as executror:
 
                 future_to_send = {
@@ -83,7 +81,6 @@ class SuzukiKasami():
                 for future in concurrent.futures.as_completed(future_to_send):
                     response = future.result()
 
-                    #print("RECEIVED RESPONSE : %s" %response)
                     #Update the token-bearer after successfully receiving info
                     token = response.get(keys.TOKEN_QUEUE)
                     if token and token[0] == self.node:
@@ -91,7 +88,9 @@ class SuzukiKasami():
                         print("TOKEN RECEIVED :  %s" %response)
                     
                         #update the token queue with token queue from response
-                        self.token_queue.extend(token)
+                        token_queue = deque()
+                        [token_queue.append(i) for i in token]
+                        self.token_queue = token_queue
 
                         # remove the node from the token queue
                         self.token_queue.popleft()
@@ -140,6 +139,8 @@ class SuzukiKasami():
             max(self.RN[requestingNode], 
             data[keys.SEQUENCE_NUMBER])
 
+        self.LN[requestingNode] = \
+                max(self.LN[requestingNode], data[keys.LN_SEQUENCE])
         # Check if token is present with me and send reply accordingly.
         return self.reply(requestingNode)
     

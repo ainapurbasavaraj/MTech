@@ -16,6 +16,7 @@ class keys:
     SEQUENCE_NUMBER = 'sequence-number'
     CONTENT_TYPE = 'content-type'
     TOKEN_QUEUE = 'token-queue'
+    LN_SEQUENCE = 'ln-sequence-number'
 
 class Methods:
     POST = 'POST'
