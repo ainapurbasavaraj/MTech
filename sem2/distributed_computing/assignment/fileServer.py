@@ -4,6 +4,7 @@ import requests
 import platform
 import json
 import common
+from check_hash import hashfile
 
 class FileServer:
 
@@ -12,6 +13,14 @@ class FileServer:
         self.storagePath = os.path.join(os.getcwd(), 'Files')
         # Holds list of files server has
         self.filesList = []
+
+        # Store the hash of the files
+        self.hashdict = dict()
+        dir_list = os.listdir(self.storagePath)
+        for file in dir_list:
+            self.hashdict[hashfile(file)] = file
+
+
         #stores the list of files server has in filesystem.
         #self.filesList and self.fileInfo has same info but
         #self.fileList is in memory and self.fileInfo is on disk.
@@ -34,12 +43,14 @@ class FileServer:
     def add_file_to_server(self, filename, data):
 
         filePath = os.path.join(self.storagePath, filename)
+        if hashfile(filePath) in self.hashdict:
+            print("Same file is already present on server.")
+            return
+
         with open(filePath, 'w') as f:
             f.write(data)
         #append the list
         self.filesList.append(filename)
-        #with open(self.metadataFile, 'w') as f:
-        #    f.write(filename)
 
         print("File %s added to server." %(filePath))
 
